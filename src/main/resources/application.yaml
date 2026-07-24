@@ -1,0 +1,19 @@
+spring:
+  application:
+    name: saas-spring-backend
+
+  datasource:
+    url: jdbc:postgresql://localhost:5432/saas_subscription_platform
+    username: postgres
+    password: ${DB_PASSWORD}
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+
+server:
+  port: 9090
