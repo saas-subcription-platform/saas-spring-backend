@@ -1,6 +1,6 @@
 package com.saas.springbackend.company.entity;
 
-//import com.saas.springbackend.common.entity.BaseClass;
+import com.saas.springbackend.common.entity.BaseClass;
 import com.saas.springbackend.subscription.entity.Subscription;
 import com.saas.springbackend.user.entity.User;
 import jakarta.persistence.*;
@@ -18,11 +18,7 @@ import java.util.List;
 @AllArgsConstructor
 @SuperBuilder
 public class Company
-//        extends BaseClass
-{
-    @Id
-    Long id;
-
+        extends BaseClass {
     @Column(name = "company_name", nullable = false, unique = true)
     private String companyName;
 

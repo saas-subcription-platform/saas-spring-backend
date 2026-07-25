@@ -1,6 +1,7 @@
 package com.saas.springbackend.user.entity;
 
 //import com.saas.springbackend.common.entity.BaseClass;
+import com.saas.springbackend.common.entity.BaseClass;
 import com.saas.springbackend.company.entity.Company;
 import jakarta.persistence.*;
 import lombok.*;
@@ -14,11 +15,7 @@ import lombok.experimental.SuperBuilder;
 @AllArgsConstructor
 @SuperBuilder
 public class User
-//        extends BaseClass
-{
-    @Id
-    Integer id;
-
+        extends BaseClass {
     @Column(name = "first_name", nullable = false)
     private String firstName;
 
