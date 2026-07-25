@@ -16,20 +16,11 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@AttributeOverrides({
-        @AttributeOverride(
+@AttributeOverride(
                 name = "id",
                 column = @Column(name = "company_id")
-        ),
-        @AttributeOverride(
-                name = "createdAt",
-                column = @Column(name = "company_created_at")
-        ),
-        @AttributeOverride(
-                name = "updatedAt",
-                column = @Column(name = "company_updated_at")
-        )
-})
+)
+
 public class Company
         extends BaseClass {
     @Column(name = "company_name", nullable = false, unique = true)

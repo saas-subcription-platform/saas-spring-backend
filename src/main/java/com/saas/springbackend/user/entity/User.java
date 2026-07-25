@@ -13,20 +13,9 @@ import lombok.experimental.SuperBuilder;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@AttributeOverrides({
-        @AttributeOverride(
+@AttributeOverride(
                 name = "id",
-                column = @Column(name = "user_id")
-        ),
-        @AttributeOverride(
-                name = "createdAt",
-                column = @Column(name = "user_created_at")
-        ),
-        @AttributeOverride(
-                name = "updatedAt",
-                column = @Column(name = "user_updated_at")
-        )
-})
+                column = @Column(name = "user_id"))
 public class User
         extends BaseClass {
     @Column(name = "first_name", nullable = false)
