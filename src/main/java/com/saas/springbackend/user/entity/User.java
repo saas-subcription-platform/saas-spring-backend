@@ -16,6 +16,8 @@ import lombok.experimental.SuperBuilder;
 @AttributeOverride(
                 name = "id",
                 column = @Column(name = "user_id"))
+@ToString(exclude = "password")
+
 public class User
         extends BaseClass {
     @Column(name = "first_name", nullable = false)
