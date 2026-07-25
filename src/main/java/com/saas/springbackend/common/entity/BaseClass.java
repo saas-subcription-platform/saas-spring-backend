@@ -1,4 +1,4 @@
-package com.saas.springbackend.common;
+package com.saas.springbackend.common.entity;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
