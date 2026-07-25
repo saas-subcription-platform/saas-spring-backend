@@ -13,7 +13,20 @@ import lombok.experimental.SuperBuilder;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@SuperBuilder
+@AttributeOverrides({
+        @AttributeOverride(
+                name = "id",
+                column = @Column(name = "user_id")
+        ),
+        @AttributeOverride(
+                name = "createdAt",
+                column = @Column(name = "user_created_at")
+        ),
+        @AttributeOverride(
+                name = "updatedAt",
+                column = @Column(name = "user_updated_at")
+        )
+})
 public class User
         extends BaseClass {
     @Column(name = "first_name", nullable = false)
@@ -34,7 +47,6 @@ public class User
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    @Builder.Default
     private UserStatus status = UserStatus.ACTIVE;
 
     @ManyToOne(fetch = FetchType.LAZY)

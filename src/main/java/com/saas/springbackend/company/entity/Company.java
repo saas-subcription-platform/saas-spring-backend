@@ -16,7 +16,20 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@SuperBuilder
+@AttributeOverrides({
+        @AttributeOverride(
+                name = "id",
+                column = @Column(name = "company_id")
+        ),
+        @AttributeOverride(
+                name = "createdAt",
+                column = @Column(name = "company_created_at")
+        ),
+        @AttributeOverride(
+                name = "updatedAt",
+                column = @Column(name = "company_updated_at")
+        )
+})
 public class Company
         extends BaseClass {
     @Column(name = "company_name", nullable = false, unique = true)
@@ -51,7 +64,6 @@ public class Company
             cascade = CascadeType.ALL,
             orphanRemoval = true
     )
-    @Builder.Default
     private List<User> users = new ArrayList<>();
 
     @OneToOne(fetch = FetchType.LAZY)
