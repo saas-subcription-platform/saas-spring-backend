@@ -20,6 +20,20 @@ spring:
       name: user
       password: 123
 
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    properties:
+      mail:
+        smtp:
+          auth:
+            true
+          starttls:
+            enable:
+              true
+
+
+
 jwt:
     secret: WlJ4bFpYSmxkRjlxZDNSZmMyVmpjbVYwWDJ0bGVWOXdjbTlrZFdOMGFXOXVYMnRsZVE9PQ==
     expiration: 7200000
