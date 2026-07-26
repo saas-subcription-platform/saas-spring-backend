@@ -1,5 +1,8 @@
 package com.saas.springbackend.subscription.entity;
 
-public class Subscription {
+import com.saas.springbackend.common.entity.BaseClass;
+
+public class Subscription extends BaseClass {
+
 
 }
