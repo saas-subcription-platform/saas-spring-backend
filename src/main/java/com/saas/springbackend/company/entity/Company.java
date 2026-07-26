@@ -57,7 +57,10 @@ public class Company
     )
     private List<User> users = new ArrayList<>();
 
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "company_id", nullable = false, unique = true)
-    private Company company;
+    @OneToOne(
+            mappedBy = "company",
+            cascade = CascadeType.ALL,
+            fetch = FetchType.LAZY
+    )
+    private Subscription subscription;
 }
