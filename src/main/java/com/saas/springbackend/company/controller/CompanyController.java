@@ -2,11 +2,9 @@ package com.saas.springbackend.company.controller;
 
 import com.saas.springbackend.company.dtos.CompanyRequestDto;
 import com.saas.springbackend.company.service.CompanyService;
+import com.saas.springbackend.user.entity.User;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @ResponseBody
@@ -16,8 +14,16 @@ public class CompanyController {
 
     @PostMapping("/register")
     public void registerCompany(@RequestBody CompanyRequestDto requestDto) {
-        System.out.println("In the register controller");
-        System.out.println(requestDto);
         companyService.registerCompany(requestDto);
+    }
+
+    @PostMapping("/login")
+    public String loginCompany(@RequestBody User u) {
+        return companyService.verify(u);
+    }
+
+    @GetMapping("/admin/dashboard")
+    public String dashboard() {
+        return "This is Secured Page";
     }
 }

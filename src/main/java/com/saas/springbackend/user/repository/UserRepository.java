@@ -8,4 +8,5 @@ import org.yaml.snakeyaml.events.Event;
 
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
+    User findByEmail(String email);
 }

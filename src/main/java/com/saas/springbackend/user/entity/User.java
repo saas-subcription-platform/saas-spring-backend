@@ -16,7 +16,6 @@ import lombok.experimental.SuperBuilder;
 @AttributeOverride(
                 name = "id",
                 column = @Column(name = "user_id"))
-@ToString(exclude = "password")
 
 public class User
         extends BaseClass {
@@ -30,6 +29,7 @@ public class User
     private String email;
 
     @Column(nullable = false)
+    @ToString.Exclude
     private String password;
 
     @Enumerated(EnumType.STRING)
@@ -42,5 +42,6 @@ public class User
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "company_id", nullable = false)
+    @ToString.Exclude
     private Company company;
 }
