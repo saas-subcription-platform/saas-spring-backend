@@ -32,6 +32,14 @@ public class User
     @ToString.Exclude
     private String password;
 
+
+    @Column(nullable = false)
+    private String phone;
+
+
+    @Column(nullable = false)
+    private String department;
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private Role role = Role.ADMIN;
