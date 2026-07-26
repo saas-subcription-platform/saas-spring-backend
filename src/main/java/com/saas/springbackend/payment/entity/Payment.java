@@ -5,6 +5,7 @@ import com.saas.springbackend.invoice.entity.Invoice;
 import com.saas.springbackend.transaction.entity.PaymentMethod;
 import com.saas.springbackend.transaction.entity.Transaction;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Positive;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -30,6 +31,7 @@ public class Payment extends BaseClass {
     @Column(name = "subscription_id", nullable = false)
     private Long subscriptionId;
 
+    @Positive
     @Column(nullable = false, precision = 10, scale = 2)
     private BigDecimal amount;
 

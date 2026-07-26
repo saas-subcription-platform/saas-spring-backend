@@ -3,6 +3,7 @@ package com.saas.springbackend.transaction.entity;
 import com.saas.springbackend.common.entity.BaseClass;
 import com.saas.springbackend.payment.entity.Payment;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Positive;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -28,6 +29,7 @@ public class Transaction extends BaseClass {
     @JoinColumn(name = "payment_id", nullable = false)
     private Payment payment;
 
+    @Positive
     @Column(nullable = false, precision = 10, scale = 2)
     private BigDecimal amount;
 

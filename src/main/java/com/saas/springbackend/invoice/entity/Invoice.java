@@ -3,6 +3,8 @@ package com.saas.springbackend.invoice.entity;
 import com.saas.springbackend.common.entity.BaseClass;
 import com.saas.springbackend.payment.entity.Payment;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.PositiveOrZero;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 
@@ -31,15 +33,19 @@ public class Invoice extends BaseClass {
     @Column(name = "billing_end_date", nullable = false)
     private LocalDate billingEndDate;
 
+    @Positive
     @Column(nullable = false, precision = 10, scale = 2)
     private BigDecimal subtotal;
 
+    @PositiveOrZero
     @Column(nullable = false, precision = 10, scale = 2)
     private BigDecimal cgst;
 
+    @PositiveOrZero
     @Column(nullable = false, precision = 10, scale = 2)
     private BigDecimal sgst;
 
+    @Positive
     @Column(name = "total_amount", nullable = false, precision = 10, scale = 2)
     private BigDecimal totalAmount;
 
