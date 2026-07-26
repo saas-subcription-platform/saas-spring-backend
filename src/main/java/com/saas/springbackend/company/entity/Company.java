@@ -20,7 +20,7 @@ import java.util.List;
                 name = "id",
                 column = @Column(name = "company_id")
 )
-@ToString
+@ToString(exclude = {"users","subscription"})
 public class Company
         extends BaseClass {
     @Column(name = "company_name", nullable = false, unique = true)

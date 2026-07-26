@@ -1,6 +1,7 @@
 package com.saas.springbackend.security.config;
 
 import com.saas.springbackend.security.jwt.JwtFilter;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -15,6 +16,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
@@ -26,13 +28,11 @@ import java.util.List;
 @EnableWebSecurity
 @EnableMethodSecurity
 @Configuration
+@RequiredArgsConstructor
 public class SecurityConfig {
 
-    @Autowired
-    private JwtFilter jwtFilter;
-
-    @Autowired
-    UserDetailsService userDetailsService;
+    private final JwtFilter jwtFilter;
+    private final UserDetailsService userDetailsService;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -42,28 +42,35 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
 
-                        .requestMatchers("/register", "/login").permitAll()
+                        .requestMatchers("/register", "/login", "/").permitAll()
 
                         .requestMatchers("/admin").hasRole("ADMIN")
+                        .requestMatchers("/employee").hasRole("EMPLOYEE")
 
-                        .requestMatchers("/user").hasAnyRole("USER", "ADMIN")
+//                        .requestMatchers("/user").hasAnyRole("USER", "ADMIN")
 
                         .anyRequest().authenticated())
-                .httpBasic(Customizer.withDefaults())
+//                .httpBasic(Customizer.withDefaults())
                 .sessionManagement(session ->
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
 
     @Bean
-    public AuthenticationProvider authenticationProvider() {
-        DaoAuthenticationProvider daoAuthProvider = new DaoAuthenticationProvider();
-//        daoAuthProvider.setPasswordEncoder(NoOpPasswordEncoder.getInstance());
-        daoAuthProvider.setPasswordEncoder(new BCryptPasswordEncoder(12));
-        daoAuthProvider.setUserDetailsService(userDetailsService);
-        return daoAuthProvider;
+    public AuthenticationProvider authenticationProvider(
+            PasswordEncoder passwordEncoder) {
+
+        DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
+        provider.setPasswordEncoder(passwordEncoder);
+        provider.setUserDetailsService(userDetailsService);
+
+        return provider;
     }
 
     @Bean

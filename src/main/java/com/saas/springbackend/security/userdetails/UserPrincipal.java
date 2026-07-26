@@ -10,11 +10,11 @@ import java.util.Collections;
 
 public class UserPrincipal implements UserDetails {
 
-    private User user;
+    private final User user;
 
     public UserPrincipal(User u) {
-        System.out.println("user principle ctor");
-        System.out.println(u);
+//        System.out.println("user principle ctor");
+//        System.out.println(u);
         this.user = u;
     }
 
@@ -54,5 +54,6 @@ public class UserPrincipal implements UserDetails {
     @Override
     public boolean isEnabled() {
         return true;
+//        return user.getStatus() == UserStatus.ACTIVE;
     }
 }
