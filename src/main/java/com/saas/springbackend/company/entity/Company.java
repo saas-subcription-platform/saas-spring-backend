@@ -20,14 +20,11 @@ import java.util.List;
                 name = "id",
                 column = @Column(name = "company_id")
 )
-
+@ToString(exclude = {"users","subscription"})
 public class Company
         extends BaseClass {
     @Column(name = "company_name", nullable = false, unique = true)
     private String companyName;
-
-    @Column(name = "contact_email", nullable = false, unique = true)
-    private String contactEmail;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "company_size", nullable = false)
@@ -63,4 +60,5 @@ public class Company
             fetch = FetchType.LAZY
     )
     private Subscription subscription;
+
 }
