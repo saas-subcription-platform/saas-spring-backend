@@ -15,5 +15,14 @@ spring:
       hibernate:
         format_sql: true
 
+  security:
+    user:
+      name: user
+      password: 123
+
+jwt:
+    secret: WlJ4bFpYSmxkRjlxZDNSZmMyVmpjbVYwWDJ0bGVWOXdjbTlrZFdOMGFXOXVYMnRsZVE9PQ==
+    expiration: 7200000
+
 server:
   port: 9090
