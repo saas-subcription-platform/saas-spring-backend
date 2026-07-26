@@ -46,7 +46,6 @@ public class SecurityConfig {
                                 "/login",
                                 "/",
 //   add routes here that you want to make public (or for testing)
-                                "/admin/dashboard",
                                 "/swagger-ui/**",
                                 "/v3/api-docs/**",
                                 "/swagger-ui.html"

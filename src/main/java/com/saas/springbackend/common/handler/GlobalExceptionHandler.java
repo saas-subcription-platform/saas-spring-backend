@@ -1,6 +1,6 @@
 package com.saas.springbackend.common.handler;
 
-import com.saas.springbackend.common.dto.ErrorResponse;
+import com.saas.springbackend.common.dto.ErrorResponseDto;
 import com.saas.springbackend.common.exception.CompanyAlreadyExistsException;
 import com.saas.springbackend.common.exception.EmailAlreadyExistsException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -15,11 +15,11 @@ import java.time.LocalDateTime;
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(EmailAlreadyExistsException.class)
-    public ResponseEntity<ErrorResponse> handleEmailAlreadyExists(
+    public ResponseEntity<ErrorResponseDto> handleEmailAlreadyExists(
             EmailAlreadyExistsException ex,
             HttpServletRequest request) {
 
-        ErrorResponse error = new ErrorResponse(
+        ErrorResponseDto error = new ErrorResponseDto(
                 LocalDateTime.now(),
                 HttpStatus.CONFLICT.value(),
                 HttpStatus.CONFLICT.getReasonPhrase(),
@@ -31,11 +31,11 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(CompanyAlreadyExistsException.class)
-    public ResponseEntity<ErrorResponse> handleCompanyAlreadyExists(
+    public ResponseEntity<ErrorResponseDto> handleCompanyAlreadyExists(
             CompanyAlreadyExistsException ex,
             HttpServletRequest request) {
 
-        ErrorResponse error = new ErrorResponse(
+        ErrorResponseDto error = new ErrorResponseDto(
                 LocalDateTime.now(),
                 HttpStatus.CONFLICT.value(),
                 HttpStatus.CONFLICT.getReasonPhrase(),
@@ -51,11 +51,11 @@ public class GlobalExceptionHandler {
 
 //    Generic Exception Handler
 @ExceptionHandler(Exception.class)
-public ResponseEntity<ErrorResponse> handleException(
+public ResponseEntity<ErrorResponseDto> handleException(
         Exception ex,
         HttpServletRequest request) {
 
-    ErrorResponse error = new ErrorResponse(
+    ErrorResponseDto error = new ErrorResponseDto(
             LocalDateTime.now(),
             HttpStatus.INTERNAL_SERVER_ERROR.value(),
             HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase(),
