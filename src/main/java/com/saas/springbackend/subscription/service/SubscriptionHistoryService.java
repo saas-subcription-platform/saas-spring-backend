@@ -10,7 +10,15 @@ public interface SubscriptionHistoryService {
 
     void recordSubscriptionCancelled(Subscription subscription);
 
-    void recordSubscriptionUpgraded(Subscription subscription);
+    void recordSubscriptionUpgraded(
+            Subscription subscription,
+            String oldPlan,
+            String newPlan
+    );
 
-    void recordSubscriptionDowngraded(Subscription subscription);
+    void recordSubscriptionDowngraded(
+            Subscription subscription,
+            String oldPlan,
+            String newPlan
+    );
 }

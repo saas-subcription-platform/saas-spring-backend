@@ -105,4 +105,18 @@ public class SubscriptionValidator {
         }
     }
 
+    public void validatePlanChange(
+            Subscription currentSubscription,
+            SubscriptionPlan newPlan) {
+
+        if (currentSubscription.getSubscriptionPlan()
+                .getId()
+                .equals(newPlan.getId())) {
+
+            throw new IllegalArgumentException(
+                    "Subscription is already using the selected plan."
+            );
+        }
+    }
+
 }

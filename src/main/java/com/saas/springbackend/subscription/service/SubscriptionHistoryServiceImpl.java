@@ -44,21 +44,34 @@ public class SubscriptionHistoryServiceImpl implements  SubscriptionHistoryServi
     }
 
     @Override
-    public void recordSubscriptionUpgraded(Subscription subscription) {
+    public void recordSubscriptionUpgraded(Subscription subscription, String oldPlan, String newPlan) {
 
-        saveHistory(
-                subscription,
-                SubscriptionAction.UPGRADED
-        );
+        saveHistory(subscription, SubscriptionAction.UPGRADED, oldPlan, newPlan);
     }
 
     @Override
-    public void recordSubscriptionDowngraded(Subscription subscription) {
+    public void recordSubscriptionDowngraded(Subscription subscription, String oldPlan, String newPlan) {
 
-        saveHistory(
-                subscription,
-                SubscriptionAction.DOWNGRADED
-        );
+        saveHistory(subscription, SubscriptionAction.DOWNGRADED, oldPlan, newPlan);
+    }
+
+    private void saveHistory(
+            Subscription subscription,
+            SubscriptionAction action,
+            String oldPlan,
+            String newPlan) {
+
+        SubscriptionHistory history =
+                SubscriptionHistory.builder()
+                        .subscription(subscription)
+                        .action(action)
+                        .oldPlan(oldPlan)
+                        .newPlan(newPlan)
+                        .amountPaid(subscription.getAmount())
+                        .remarks(action.name())
+                        .build();
+
+        subscriptionHistoryRepository.save(history);
     }
 
     private void saveHistory(

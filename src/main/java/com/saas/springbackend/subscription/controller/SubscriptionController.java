@@ -1,5 +1,6 @@
 package com.saas.springbackend.subscription.controller;
 
+import com.saas.springbackend.subscription.dtos.request.ChangePlanRequestDTO;
 import com.saas.springbackend.subscription.dtos.request.SubscribeRequestDTO;
 import com.saas.springbackend.subscription.dtos.response.ApiResponse;
 import com.saas.springbackend.subscription.dtos.response.SubscriptionResponseDTO;
@@ -72,6 +73,19 @@ public class SubscriptionController {
 
         return ResponseEntity.ok(
                 subscriptionService.cancelSubscription(subscriptionId)
+        );
+    }
+
+    @PutMapping("/{subscriptionId}/change-plan")
+    public ResponseEntity<SubscriptionResponseDTO> changePlan(
+            @PathVariable Long subscriptionId,
+            @Valid @RequestBody ChangePlanRequestDTO request) {
+
+        return ResponseEntity.ok(
+                subscriptionService.changePlan(
+                        subscriptionId,
+                        request
+                )
         );
     }
 }
