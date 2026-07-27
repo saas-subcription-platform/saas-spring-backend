@@ -4,7 +4,7 @@ import com.saas.springbackend.notification.dto.NotificationResponseDTO;
 import com.saas.springbackend.notification.service.NotificationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
+
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -17,14 +17,12 @@ public class NotificationController {
     private final NotificationService notificationService;
 
     // Get all notifications of logged-in user
-    @GetMapping
+    @GetMapping("/{userId}")
     public ResponseEntity<List<NotificationResponseDTO>> getAllNotifications(
-            Authentication authentication) {
-
-        String email = authentication.getName();
+            @PathVariable Long userId) {
 
         return ResponseEntity.ok(
-                notificationService.getAllNotifications(email));
+                notificationService.getAllNotifications(userId));
     }
 
     // Mark one notification as read
@@ -37,25 +35,21 @@ public class NotificationController {
     }
 
     // Mark all notifications as read
-    @PatchMapping("/read-all")
+    @PatchMapping("/read-all/{userId}")
     public ResponseEntity<String> markAllAsRead(
-            Authentication authentication) {
+            @PathVariable Long userId) {
 
-        String email = authentication.getName();
-
-        notificationService.markAllAsRead(email);
+        notificationService.markAllAsRead(userId);
 
         return ResponseEntity.ok("All notifications marked as read.");
     }
 
     // Clear all notifications
-    @DeleteMapping("/clear")
+    @DeleteMapping("/clear/{userId}")
     public ResponseEntity<String> clearAllNotifications(
-            Authentication authentication) {
+            @PathVariable Long userId) {
 
-        String email = authentication.getName();
-
-        notificationService.clearAllNotifications(email);
+        notificationService.clearAllNotifications(userId);
 
         return ResponseEntity.ok("All notifications cleared.");
     }

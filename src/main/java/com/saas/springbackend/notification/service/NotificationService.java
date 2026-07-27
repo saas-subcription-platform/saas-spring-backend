@@ -14,11 +14,11 @@ public interface NotificationService {
             String message,
             NotificationType type);
 
-    List<NotificationResponseDTO> getAllNotifications(String email);
+    List<NotificationResponseDTO> getAllNotifications(Long userId);
 
     NotificationResponseDTO markAsRead(Long notificationId);
 
-    void markAllAsRead(String email);
+    void markAllAsRead(Long userId);
 
-    void clearAllNotifications(String email);
+    void clearAllNotifications(Long userId);
 }

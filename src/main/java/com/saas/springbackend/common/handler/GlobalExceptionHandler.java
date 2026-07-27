@@ -59,7 +59,7 @@ public ResponseEntity<ErrorResponseDto> handleException(
             LocalDateTime.now(),
             HttpStatus.INTERNAL_SERVER_ERROR.value(),
             HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase(),
-            "Something went wrong. Please try again later.",
+            ex.getMessage(),
             request.getRequestURI()
     );
 

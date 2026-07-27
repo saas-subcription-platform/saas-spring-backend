@@ -14,16 +14,12 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import com.saas.springbackend.user.repository.UserRepository;
-
 @Service
 @Transactional
 @RequiredArgsConstructor
 public class NotificationServiceImpl implements NotificationService {
 
     private final NotificationRepository notificationRepository;
-
-    private final UserRepository userRepository;
 
     private final ModelMapper mapper;
 
@@ -55,13 +51,10 @@ public class NotificationServiceImpl implements NotificationService {
     }
 
     @Override
-    public List<NotificationResponseDTO> getAllNotifications(String email) {
-
-        User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+    public List<NotificationResponseDTO> getAllNotifications(Long userId) {
 
         return notificationRepository
-                .findByUserIdOrderByCreatedAtDesc(user.getId())
+                .findByUserIdOrderByCreatedAtDesc(userId)
                 .stream()
                 .map(notification -> {
 
@@ -69,7 +62,7 @@ public class NotificationServiceImpl implements NotificationService {
                             mapper.map(notification, NotificationResponseDTO.class);
 
                     dto.setNotificationId(notification.getId());
-                    dto.setUserId(user.getId());
+                    dto.setUserId(userId);
 
                     return dto;
 
@@ -97,28 +90,24 @@ public class NotificationServiceImpl implements NotificationService {
 
         return response;
     }
-    @Override
-    public void markAllAsRead(String email) {
 
-        User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+    @Override
+    public void markAllAsRead(Long userId) {
 
         List<Notification> notifications =
-                notificationRepository.findByUserIdOrderByCreatedAtDesc(user.getId());
+                notificationRepository.findByUserIdOrderByCreatedAtDesc(userId);
 
         notifications.forEach(notification ->
                 notification.setStatus(NotificationStatus.READ));
 
         notificationRepository.saveAll(notifications);
     }
-    @Override
-    public void clearAllNotifications(String email) {
 
-        User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+    @Override
+    public void clearAllNotifications(Long userId) {
 
         List<Notification> notifications =
-                notificationRepository.findByUserIdOrderByCreatedAtDesc(user.getId());
+                notificationRepository.findByUserIdOrderByCreatedAtDesc(userId);
 
         notificationRepository.deleteAll(notifications);
     }
