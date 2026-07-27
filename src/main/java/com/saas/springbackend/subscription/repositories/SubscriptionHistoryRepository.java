@@ -9,6 +9,6 @@ import java.util.List;
 
 @Repository
 public interface SubscriptionHistoryRepository extends JpaRepository<SubscriptionHistory,Long> {
-    List<SubscriptionHistory> findBySubscriptionOrderByCreatedAtDesc(
-            Subscription subscription);
+//    List<SubscriptionHistory> findBySubscriptionOrderByCreatedAtDesc(
+//            Subscription subscription);
 }

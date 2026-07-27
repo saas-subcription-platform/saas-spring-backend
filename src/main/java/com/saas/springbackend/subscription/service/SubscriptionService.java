@@ -19,4 +19,6 @@ public interface SubscriptionService {
      * @return Subscription details.
      */
     SubscriptionResponseDTO getSubscription(Long subscriptionId);
+
+    SubscriptionResponseDTO renewSubscription(Long subscriptionId);
 }

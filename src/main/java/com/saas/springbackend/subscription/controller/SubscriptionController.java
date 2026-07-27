@@ -56,4 +56,13 @@ public class SubscriptionController {
                 )
         );
     }
+
+    @PostMapping("/{subscriptionId}/renew")
+    public ResponseEntity<SubscriptionResponseDTO> renewSubscription(
+            @PathVariable Long subscriptionId) {
+
+        return ResponseEntity.ok(
+                subscriptionService.renewSubscription(subscriptionId)
+        );
+    }
 }
