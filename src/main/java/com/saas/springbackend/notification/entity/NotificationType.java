@@ -2,9 +2,15 @@ package com.saas.springbackend.notification.entity;
 
 public enum NotificationType {
 
-    PAYMENT,
-    SUBSCRIPTION,
     EMPLOYEE,
-    SYSTEM
 
+    COMPANY,
+
+    SUBSCRIPTION,
+
+    PAYMENT,
+
+    SYSTEM,
+
+    GENERAL
 }

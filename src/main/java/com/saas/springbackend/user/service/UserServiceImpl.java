@@ -10,7 +10,8 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
-
+import com.saas.springbackend.notification.service.NotificationService;
+import com.saas.springbackend.notification.entity.NotificationType;
 @Service
 @Transactional
 @RequiredArgsConstructor
@@ -20,6 +21,7 @@ public class UserServiceImpl implements UserService{
     private final ModelMapper mapper;
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
+    private final NotificationService notificationService;
 
     @Override
     public String verify(LoginRequest request) {
