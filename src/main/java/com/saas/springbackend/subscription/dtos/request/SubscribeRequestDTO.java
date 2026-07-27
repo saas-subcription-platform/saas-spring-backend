@@ -12,33 +12,12 @@ import lombok.*;
 @AllArgsConstructor
 @Builder
 public class SubscribeRequestDTO {
-    @NotBlank(message = "Company name is required")
-    private String companyName;
+    @NotNull(message = "Company ID is required.")
+    private Long companyId;
 
-    @NotBlank(message = "Contact email is required")
-    @Email(message = "Invalid email format")
-    private String contactEmail;
-
-    @NotNull(message = "Company size is required")
-    private CompanySize companySize;
-
-    private String phone;
-
-    private String address;
-
-    private String city;
-
-    private String state;
-
-    private String country;
-
-    private String zipCode;
-
-    private String gstNumber;
-
-    @NotNull(message = "Subscription plan is required")
+    @NotNull(message = "Subscription Plan ID is required.")
     private Long planId;
 
-    @NotNull(message = "Pricing option is required")
+    @NotNull(message = "Pricing ID is required.")
     private Long pricingId;
 }

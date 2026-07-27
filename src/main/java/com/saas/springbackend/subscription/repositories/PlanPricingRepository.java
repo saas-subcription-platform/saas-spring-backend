@@ -18,4 +18,8 @@ public interface PlanPricingRepository extends JpaRepository<PlanPricing,Long> {
      * @return List of pricing options.
      */
     List<PlanPricing> findBySubscriptionPlanIdAndActiveTrue(Long subscriptionPlanId);
+    Optional<PlanPricing> findByIdAndSubscriptionPlanIdAndActiveTrue(
+            Long pricingId,
+            Long subscriptionPlanId
+    );
 }
