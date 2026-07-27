@@ -8,6 +8,7 @@ import java.time.LocalDate;
 
 @Component
 public class SubscriptionFactory {
+    //subscription creation
     public Subscription createSubscription(
             Company company,
             SubscriptionPlan plan,
@@ -31,7 +32,7 @@ public class SubscriptionFactory {
                 .autoRenew(true)
                 .build();
     }
-
+//Calculating EndDate for renew subscription
     public LocalDate calculateEndDate(
             LocalDate startDate,
             BillingCycle billingCycle) {

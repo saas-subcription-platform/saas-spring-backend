@@ -1,7 +1,7 @@
 package com.saas.springbackend.subscription.service;
 
 import com.saas.springbackend.company.entity.Company;
-import com.saas.springbackend.subscription.ResourceNotFoundException;
+import com.saas.springbackend.common.exception.ResourceNotFoundException;
 import com.saas.springbackend.subscription.dtos.request.ChangePlanRequestDTO;
 import com.saas.springbackend.subscription.factory.SubscriptionFactory;
 import com.saas.springbackend.subscription.validator.SubscriptionValidator;
@@ -66,8 +66,6 @@ public class SubscriptionServiceImpl implements SubscriptionService{
 
     /**
      * Retrieves subscription details.
-     *
-     * @param subscriptionId Subscription ID.
      * @return SubscriptionResponseDTO.
      */
     @Override
@@ -85,6 +83,10 @@ public class SubscriptionServiceImpl implements SubscriptionService{
         return subscriptionMapper.toResponse(subscription);
     }
 
+    /**
+     * Renews Subscription
+     * updates the endDate of subscription plan.
+     * */
     @Override
     public SubscriptionResponseDTO renewSubscription(Long subscriptionId) {
 
@@ -111,6 +113,10 @@ public class SubscriptionServiceImpl implements SubscriptionService{
         return subscriptionMapper.toResponse(saved);
     }
 
+    /**
+     * Cancel Subscription
+     * update the action canceled and save in history.
+     * */
     @Override
     public SubscriptionResponseDTO cancelSubscription(Long subscriptionId) {
 
@@ -131,6 +137,10 @@ public class SubscriptionServiceImpl implements SubscriptionService{
         return subscriptionMapper.toResponse(saved);
     }
 
+    /**
+     * Upgrade/Degrade Subscription
+     * update the action Upgraded/degraded and save in history.
+     * */
     @Override
     public SubscriptionResponseDTO changePlan(
             Long subscriptionId,

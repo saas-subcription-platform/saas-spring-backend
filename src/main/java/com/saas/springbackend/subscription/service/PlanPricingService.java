@@ -7,8 +7,6 @@ import java.util.List;
 public interface PlanPricingService {
     /**
      * Retrieves all active pricing options for a subscription plan.
-     *
-     * @param planId Subscription Plan ID.
      * @return List of pricing options.
      */
     List<PlanPricingResponseDTO> getPricingByPlan(Long planId);

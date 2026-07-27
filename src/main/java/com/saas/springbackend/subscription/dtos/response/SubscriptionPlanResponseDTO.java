@@ -2,8 +2,6 @@ package com.saas.springbackend.subscription.dtos.response;
 
 import lombok.*;
 
-import java.util.List;
-
 @Getter
 @Setter
 @NoArgsConstructor

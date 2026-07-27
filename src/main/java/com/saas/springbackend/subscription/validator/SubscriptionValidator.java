@@ -1,16 +1,19 @@
 package com.saas.springbackend.subscription.validator;
 
+import com.saas.springbackend.common.exception.InvalidOperationException;
+import com.saas.springbackend.common.exception.InvalidRequestException;
+import com.saas.springbackend.common.exception.ResourceNotFoundException;
 import com.saas.springbackend.company.entity.Company;
 import com.saas.springbackend.company.repository.CompanyRepository;
-import com.saas.springbackend.subscription.ResourceNotFoundException;
-import com.saas.springbackend.subscription.entity.*;
-import com.saas.springbackend.subscription.repositories.*;
+import com.saas.springbackend.subscription.entity.PlanPricing;
+import com.saas.springbackend.subscription.entity.Subscription;
+import com.saas.springbackend.subscription.entity.SubscriptionPlan;
+import com.saas.springbackend.subscription.entity.SubscriptionStatus;
+import com.saas.springbackend.subscription.repositories.PlanPricingRepository;
+import com.saas.springbackend.subscription.repositories.SubscriptionPlanRepository;
+import com.saas.springbackend.subscription.repositories.SubscriptionRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
-
-import java.time.LocalDate;
-
-import static com.saas.springbackend.subscription.entity.BillingCycle.MONTHLY;
 
 @Component
 @RequiredArgsConstructor
@@ -39,7 +42,7 @@ public class SubscriptionValidator {
 
         if (subscriptionRepository.existsByCompanyId(companyId)) {
 
-            throw new IllegalStateException(
+            throw new InvalidOperationException(
                     "Company already has an active subscription."
             );
         }
@@ -59,7 +62,7 @@ public class SubscriptionValidator {
 
         if (!plan.isActive()) {
 
-            throw new IllegalStateException(
+            throw new InvalidOperationException(
                     "Selected subscription plan is inactive."
             );
         }
@@ -99,7 +102,7 @@ public class SubscriptionValidator {
     public void validateCancellation(Subscription subscription) {
 
         if (subscription.getStatus() == SubscriptionStatus.CANCELLED) {
-            throw new IllegalStateException(
+            throw new InvalidOperationException(
                     "Subscription is already cancelled."
             );
         }
@@ -113,7 +116,7 @@ public class SubscriptionValidator {
                 .getId()
                 .equals(newPlan.getId())) {
 
-            throw new IllegalArgumentException(
+            throw new InvalidRequestException(
                     "Subscription is already using the selected plan."
             );
         }

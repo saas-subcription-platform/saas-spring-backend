@@ -1,4 +1,4 @@
-package com.saas.springbackend.subscription;
+package com.saas.springbackend.common.exception;
 
 public class ResourceNotFoundException extends RuntimeException {
     public ResourceNotFoundException(String errMesg) {

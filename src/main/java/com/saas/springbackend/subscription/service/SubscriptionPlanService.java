@@ -1,7 +1,6 @@
 package com.saas.springbackend.subscription.service;
 
-import com.saas.springbackend.subscription.dtos.request.*;
-import com.saas.springbackend.subscription.dtos.response.*;
+import com.saas.springbackend.subscription.dtos.response.SubscriptionPlanResponseDTO;
 
 import java.util.List;
 

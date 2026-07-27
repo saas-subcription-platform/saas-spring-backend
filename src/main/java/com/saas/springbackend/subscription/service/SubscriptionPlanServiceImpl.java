@@ -1,12 +1,13 @@
 package com.saas.springbackend.subscription.service;
 
-import com.saas.springbackend.subscription.ResourceNotFoundException;
+import com.saas.springbackend.common.exception.ResourceNotFoundException;
 import com.saas.springbackend.subscription.dtos.response.SubscriptionPlanResponseDTO;
 import com.saas.springbackend.subscription.entity.SubscriptionPlan;
+import com.saas.springbackend.subscription.mapper.SubscriptionMapper;
 import com.saas.springbackend.subscription.repositories.SubscriptionPlanRepository;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 
 import java.util.List;
@@ -16,11 +17,10 @@ import java.util.List;
 @Transactional
 public class SubscriptionPlanServiceImpl implements  SubscriptionPlanService{
     private final SubscriptionPlanRepository subscriptionPlanRepository;
+    private final SubscriptionMapper subscriptionMapper;
 
     /**
      * Retrieves a subscription plan using its ID.
-     *
-     * @param id Subscription Plan ID.
      * @return SubscriptionPlanResponse containing plan details.
      * @throws ResourceNotFoundException if the plan does not exist.
      */
@@ -32,12 +32,11 @@ public class SubscriptionPlanServiceImpl implements  SubscriptionPlanService{
                         new ResourceNotFoundException(
                                 "Subscription Plan not found with id : " + id));
 
-        return mapToResponse(plan);
+        return subscriptionMapper.toSubscriptionPlanResponse(plan);
     }
 
     /**
      * Retrieves all subscription plans from the database.
-     *
      * @return List of all subscription plans.
      */
     @Override
@@ -45,32 +44,9 @@ public class SubscriptionPlanServiceImpl implements  SubscriptionPlanService{
 
         return subscriptionPlanRepository.findAll()
                 .stream()
-                .map(this::mapToResponse)
+                .map(subscriptionMapper::toSubscriptionPlanResponse)
                 .toList();
     }
 
 
-    /**
-     * Converts SubscriptionPlan entity into SubscriptionPlanResponse DTO.
-     *
-     * This method prevents exposing JPA entities directly
-     * to the client.
-     *
-     * @param plan SubscriptionPlan entity.
-     * @return SubscriptionPlanResponse DTO.
-     */
-    private SubscriptionPlanResponseDTO mapToResponse(
-            SubscriptionPlan plan) {
-
-        SubscriptionPlanResponseDTO response =
-                new SubscriptionPlanResponseDTO();
-
-        response.setId(plan.getId());
-        response.setPlanName(plan.getPlanName());
-        response.setPlanDescription(plan.getPlanDescription());
-        response.setMaximumUsers(plan.getMaximumUsers());
-        response.setActive(plan.isActive());
-
-        return response;
-    }
 }

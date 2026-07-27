@@ -1,7 +1,7 @@
 package com.saas.springbackend.subscription.service;
 
 import com.saas.springbackend.subscription.dtos.response.PlanPricingResponseDTO;
-import com.saas.springbackend.subscription.entity.PlanPricing;
+import com.saas.springbackend.subscription.mapper.SubscriptionMapper;
 import com.saas.springbackend.subscription.repositories.PlanPricingRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -13,12 +13,12 @@ import java.util.List;
 @RequiredArgsConstructor
 @Transactional
 public class PlanPricingServiceImpl implements PlanPricingService{
+
     private final PlanPricingRepository planPricingRepository;
+    private final SubscriptionMapper subscriptionMapper;
 
     /**
      * Retrieves all active pricing options for a subscription plan.
-     *
-     * @param planId Subscription Plan ID.
      * @return List of pricing options.
      */
     @Override
@@ -28,25 +28,7 @@ public class PlanPricingServiceImpl implements PlanPricingService{
         return planPricingRepository
                 .findBySubscriptionPlanIdAndActiveTrue(planId)
                 .stream()
-                .map(this::mapToResponse)
+                .map(subscriptionMapper::toPlanPricingResponse)
                 .toList();
-    }
-
-    /**
-     * Converts PlanPricing entity into PlanPricingResponseDTO.
-     *
-     * @param pricing PlanPricing entity.
-     * @return PlanPricingResponseDTO.
-     */
-    private PlanPricingResponseDTO mapToResponse(PlanPricing pricing) {
-
-        PlanPricingResponseDTO response = new PlanPricingResponseDTO();
-
-        response.setId(pricing.getId());
-        response.setBillingCycle(pricing.getBillingCycle());
-        response.setPrice(pricing.getPrice());
-        response.setActive(pricing.isActive());
-
-        return response;
     }
 }

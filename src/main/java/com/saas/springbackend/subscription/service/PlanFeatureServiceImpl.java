@@ -2,6 +2,7 @@ package com.saas.springbackend.subscription.service;
 
 import com.saas.springbackend.subscription.dtos.response.PlanFeatureResponseDTO;
 import com.saas.springbackend.subscription.entity.PlanFeature;
+import com.saas.springbackend.subscription.mapper.SubscriptionMapper;
 import com.saas.springbackend.subscription.repositories.PlanFeatureRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -16,11 +17,10 @@ import java.util.List;
 public class PlanFeatureServiceImpl implements PlanFeatureService{
 
     private final PlanFeatureRepository planFeatureRepository;
+    private final SubscriptionMapper subscriptionMapper;
 
     /**
      * Retrieves all enabled features associated with a subscription plan.
-     *
-     * @param planId Subscription Plan ID.
      * @return List of plan features.
      */
     @Override
@@ -30,24 +30,8 @@ public class PlanFeatureServiceImpl implements PlanFeatureService{
         return planFeatureRepository.findBySubscriptionPlanId(planId)
                 .stream()
                 .filter(PlanFeature::isEnabled)
-                .map(this::mapToResponse)
+                .map(subscriptionMapper::toPlanFeatureResponse)
                 .toList();
     }
 
-    /**
-     * Converts PlanFeature entity into PlanFeatureResponseDTO.
-     *
-     * @param feature PlanFeature entity.
-     * @return PlanFeatureResponseDTO.
-     */
-    private PlanFeatureResponseDTO mapToResponse(PlanFeature feature) {
-
-        PlanFeatureResponseDTO response = new PlanFeatureResponseDTO();
-
-        response.setId(feature.getId());
-        response.setFeatureName(feature.getFeatureName());
-        response.setFeatureDescription(feature.getFeatureDescription());
-
-        return response;
-    }
 }
