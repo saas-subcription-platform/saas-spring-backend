@@ -46,6 +46,7 @@ public class SecurityConfig {
                                 "/login",
                                 "/",
 //   add routes here that you want to make public (or for testing)
+                                "/admin/users/**",
                                 "/swagger-ui/**",
                                 "/v3/api-docs/**",
                                 "/swagger-ui.html"
@@ -105,3 +106,7 @@ public class SecurityConfig {
         return source;
     }
 }
+
+
+
+
