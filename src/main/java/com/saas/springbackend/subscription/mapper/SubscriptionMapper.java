@@ -49,6 +49,7 @@ public class SubscriptionMapper {
         response.setId(feature.getId());
         response.setFeatureName(feature.getFeatureName());
         response.setFeatureDescription(feature.getFeatureDescription());
+        response.setEnabled(feature.isEnabled());
 
         return response;
     }
@@ -86,15 +87,27 @@ public class SubscriptionMapper {
             return null;
         }
 
-        SubscriptionPlanResponseDTO response =
-                new SubscriptionPlanResponseDTO();
+        return SubscriptionPlanResponseDTO.builder()
+                .id(plan.getId())
+                .planName(plan.getPlanName())
+                .planDescription(plan.getPlanDescription())
+                .maximumUsers(plan.getMaximumUsers())
+                .active(plan.isActive())
 
-        response.setId(plan.getId());
-        response.setPlanName(plan.getPlanName());
-        response.setPlanDescription(plan.getPlanDescription());
-        response.setMaximumUsers(plan.getMaximumUsers());
-        response.setActive(plan.isActive());
+                .pricingOptions(
+                        plan.getPricingOptions()
+                                .stream()
+                                .map(this::toPlanPricingResponse)
+                                .toList()
+                )
 
-        return response;
+                .features(
+                        plan.getPlanFeatures()
+                                .stream()
+                                .map(this::toPlanFeatureResponse)
+                                .toList()
+                )
+
+                .build();
     }
 }

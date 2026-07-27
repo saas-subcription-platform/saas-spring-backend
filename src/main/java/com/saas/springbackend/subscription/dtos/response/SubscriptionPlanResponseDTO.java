@@ -2,6 +2,8 @@ package com.saas.springbackend.subscription.dtos.response;
 
 import lombok.*;
 
+import java.util.List;
+
 @Getter
 @Setter
 @NoArgsConstructor
@@ -17,5 +19,9 @@ public class SubscriptionPlanResponseDTO {
     private Integer maximumUsers;
 
     private boolean active;
+
+    private List<PlanPricingResponseDTO> pricingOptions;
+
+    private List<PlanFeatureResponseDTO> features;
 
 }

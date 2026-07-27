@@ -93,6 +93,8 @@ public ResponseEntity<ErrorResponseDto> handleException(
         Exception ex,
         HttpServletRequest request) {
 
+    ex.printStackTrace();
+
     ErrorResponseDto error = new ErrorResponseDto(
             LocalDateTime.now(),
             HttpStatus.INTERNAL_SERVER_ERROR.value(),
