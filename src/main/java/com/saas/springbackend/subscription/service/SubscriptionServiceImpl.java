@@ -20,7 +20,7 @@ import java.time.LocalDate;
 @Transactional
 public class SubscriptionServiceImpl implements SubscriptionService{
     private final SubscriptionRepository subscriptionRepository;
-    private final SubscriptionHistoryRepository subscriptionHistoryRepository;
+    private final SubscriptionHistoryService subscriptionHistoryService;
     private final SubscriptionMapper subscriptionMapper;
     private final SubscriptionValidator subscriptionValidator;
     private final SubscriptionFactory subscriptionFactory;
@@ -56,45 +56,11 @@ public class SubscriptionServiceImpl implements SubscriptionService{
                 );
 
         subscription = subscriptionRepository.save(subscription);
+
+        subscriptionHistoryService
+                .recordSubscriptionCreated(subscription);
+
         return subscriptionMapper.toResponse(subscription);
-    }
-
-    /**
-     * Creates a new subscription.
-     *
-     * @param company Company entity.
-     * @param plan Subscription plan.
-     * @param pricing Selected pricing.
-     * @return Saved Subscription.
-     */
-    private Subscription createSubscription(
-            Company company,
-            SubscriptionPlan plan,
-            PlanPricing pricing) {
-        System.out.println("Inside createSubscription");
-        LocalDate startDate = LocalDate.now();
-        LocalDate endDate = subscriptionFactory.calculateEndDate(
-                startDate,
-                pricing.getBillingCycle()
-        );
-
-        Subscription subscription = Subscription.builder()
-                .company(company)
-                .subscriptionPlan(plan)
-                .planPricing(pricing)
-                .amount(pricing.getPrice())
-                .startDate(startDate)
-                .endDate(endDate)
-                .renewalDate(endDate)
-                .status(SubscriptionStatus.ACTIVE)
-                .autoRenew(true)
-                .build();
-        System.out.println("Before Save");
-        Subscription saved = subscriptionRepository.save(subscription);
-        System.out.println("After Save");
-
-        return saved;
-
     }
 
     /**
@@ -133,8 +99,29 @@ public class SubscriptionServiceImpl implements SubscriptionService{
         subscription.setEndDate(newEndDate);
         subscription.setRenewalDate(newEndDate);
 
+        Subscription saved = subscriptionRepository.save(subscription);
+
+        subscriptionHistoryService.recordSubscriptionRenewed(saved);
+
+        return subscriptionMapper.toResponse(saved);
+    }
+
+    @Override
+    public SubscriptionResponseDTO cancelSubscription(Long subscriptionId) {
+
+        Subscription subscription =
+                subscriptionValidator.validateSubscriptionById(subscriptionId);
+
+        subscriptionValidator.validateCancellation(subscription);
+
+        subscription.setStatus(SubscriptionStatus.CANCELLED);
+        subscription.setAutoRenew(false);
+
         Subscription saved =
                 subscriptionRepository.save(subscription);
+
+        subscriptionHistoryService
+                .recordSubscriptionCancelled(saved);
 
         return subscriptionMapper.toResponse(saved);
     }

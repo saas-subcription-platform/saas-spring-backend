@@ -3,10 +3,7 @@ package com.saas.springbackend.subscription.validator;
 import com.saas.springbackend.company.entity.Company;
 import com.saas.springbackend.company.repository.CompanyRepository;
 import com.saas.springbackend.subscription.ResourceNotFoundException;
-import com.saas.springbackend.subscription.entity.BillingCycle;
-import com.saas.springbackend.subscription.entity.PlanPricing;
-import com.saas.springbackend.subscription.entity.Subscription;
-import com.saas.springbackend.subscription.entity.SubscriptionPlan;
+import com.saas.springbackend.subscription.entity.*;
 import com.saas.springbackend.subscription.repositories.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -97,6 +94,15 @@ public class SubscriptionValidator {
                                 "Subscription not found with ID : " + subscriptionId
                         )
                 );
+    }
+
+    public void validateCancellation(Subscription subscription) {
+
+        if (subscription.getStatus() == SubscriptionStatus.CANCELLED) {
+            throw new IllegalStateException(
+                    "Subscription is already cancelled."
+            );
+        }
     }
 
 }

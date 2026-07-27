@@ -65,4 +65,13 @@ public class SubscriptionController {
                 subscriptionService.renewSubscription(subscriptionId)
         );
     }
+
+    @PostMapping("/{subscriptionId}/cancel")
+    public ResponseEntity<SubscriptionResponseDTO> cancelSubscription(
+            @PathVariable Long subscriptionId) {
+
+        return ResponseEntity.ok(
+                subscriptionService.cancelSubscription(subscriptionId)
+        );
+    }
 }

@@ -21,4 +21,6 @@ public interface SubscriptionService {
     SubscriptionResponseDTO getSubscription(Long subscriptionId);
 
     SubscriptionResponseDTO renewSubscription(Long subscriptionId);
+
+    SubscriptionResponseDTO cancelSubscription(Long subscriptionId);
 }
