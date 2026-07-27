@@ -50,6 +50,7 @@ public class SecurityConfig {
                                 "/api/subscription-plans/**",
                                 "/api/subscriptions",
                                 "/api/subscriptions/**",
+                                "/admin/users/**",
                                 "/swagger-ui/**",
                                 "/v3/api-docs/**",
                                 "/swagger-ui.html"
@@ -109,3 +110,7 @@ public class SecurityConfig {
         return source;
     }
 }
+
+
+
+
