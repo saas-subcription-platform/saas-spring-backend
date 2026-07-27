@@ -6,7 +6,6 @@ import com.saas.springbackend.common.exception.EmailAlreadyExistsException;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
@@ -47,23 +46,6 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(error, HttpStatus.CONFLICT);
     }
 
-    @ExceptionHandler(BadCredentialsException.class)
-    public ResponseEntity<ErrorResponseDto> handleBadCredentials(BadCredentialsException ex) {
-
-//        ErrorResponseDto response = new ErrorResponseDto(
-//                HttpStatus.UNAUTHORIZED.value(),
-//                "Invalid email or password");
-
-        ErrorResponseDto error = new ErrorResponseDto(
-                LocalDateTime.now(),
-                HttpStatus.UNAUTHORIZED.value(),
-                HttpStatus.UNAUTHORIZED.getReasonPhrase(),
-                "Invalid email or password",
-                ""
-        );
-
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(error);
-    }
 //    Other exceptions goes here...
 
 
