@@ -1,7 +1,8 @@
 package com.saas.springbackend.user.service;
 
 import com.saas.springbackend.company.dtos.LoginRequest;
+import com.saas.springbackend.company.dtos.LoginResponseDto;
 
 public interface UserService {
-    String verify(LoginRequest request);
+    LoginResponseDto verify(LoginRequest request);
 }
