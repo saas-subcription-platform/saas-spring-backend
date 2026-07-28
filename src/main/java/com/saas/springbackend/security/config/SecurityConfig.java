@@ -50,6 +50,7 @@ public class SecurityConfig {
                                 "/validate-reset-token",
                                 "/reset-password",
 //   add routes here that you want to make public (or for testing)
+                                "/admin/users/**",
                                 "/swagger-ui/**",
                                 "/v3/api-docs/**",
                                 "/swagger-ui.html"
@@ -109,3 +110,7 @@ public class SecurityConfig {
         return source;
     }
 }
+
+
+
+
