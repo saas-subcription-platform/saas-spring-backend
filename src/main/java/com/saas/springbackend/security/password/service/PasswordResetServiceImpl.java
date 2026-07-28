@@ -84,8 +84,8 @@ public class PasswordResetServiceImpl implements PasswordResetService {
 
         System.out.println("Step 2");
 
-        tokenRepository.findByUser_Id(user.getId())
-                .ifPresent(tokenRepository::delete);
+        tokenRepository.deleteByUser_Id(user.getId());
+        tokenRepository.flush();
 
         System.out.println("Step 3");
 
@@ -105,19 +105,21 @@ public class PasswordResetServiceImpl implements PasswordResetService {
         String resetLink = "http://localhost:5173/reset-password?token=" + token;
 
         String body = """
-        Hello,
+Hi %s,
 
-        To reset your password, please click the link below:
+We received a request to reset the password for your SaaS Subscription Platform account.
 
-        %s
+To create a new password, please click the link below:
 
-        If you did not request a password reset, you can safely ignore this email.
+%s
 
-        This link will expire in 15 minutes.
+If you didn't request a password reset, you can safely ignore this email. Your password will remain unchanged.
 
-        Regards,
-        SaaS Subscription Platform Team
-        """.formatted(resetLink);
+For your security, this link will expire in 15 minutes.
+
+Thank you,
+SaaS Subscription Platform Team
+""".formatted(user.getFirstName(), resetLink);
 
         mailService.sendEmail(
                 user.getEmail(),
