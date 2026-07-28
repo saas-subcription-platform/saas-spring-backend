@@ -28,10 +28,12 @@ public class Notification extends BaseClass {
     @Column(nullable = false)
     private NotificationType type;
 
-    @Column(name = "is_read", nullable = false)
-    private Boolean isRead = false;
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private NotificationStatus status = NotificationStatus.UNREAD;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
+    @ToString.Exclude
     private User user;
 }

@@ -55,6 +55,7 @@ public class SecurityConfig {
                                 "/api/subscriptions",
                                 "/api/subscriptions/**",
                                 "/admin/users/**",
+                                "/admin/notifications/**",
                                 "/swagger-ui/**",
                                 "/v3/api-docs/**",
                                 "/swagger-ui.html"

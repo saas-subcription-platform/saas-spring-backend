@@ -13,19 +13,24 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
+import com.saas.springbackend.notification.service.NotificationService;
+import com.saas.springbackend.notification.entity.NotificationType;
 import com.saas.springbackend.company.entity.Company;
 import com.saas.springbackend.company.repository.CompanyRepository;
 import com.saas.springbackend.user.entity.User;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.List;
-import java.util.stream.Collectors;import com.saas.springbackend.company.entity.Company;
+import java.util.stream.Collectors;
+
+import com.saas.springbackend.company.entity.Company;
 import com.saas.springbackend.company.repository.CompanyRepository;
 import com.saas.springbackend.user.entity.User;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.List;
 import java.util.stream.Collectors;
+
 @Service
 @Transactional
 @RequiredArgsConstructor
@@ -35,6 +40,7 @@ public class UserServiceImpl implements UserService {
     private final ModelMapper mapper;
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
+    private final NotificationService notificationService;
 
     private final CompanyRepository companyRepository;
     private final PasswordEncoder passwordEncoder;
@@ -75,34 +81,42 @@ public class UserServiceImpl implements UserService {
     }
 
 
-//
-@Override
-public UserResponseDTO addUser(UserRequestDTO requestDTO) {
+    //
+    @Override
+    public UserResponseDTO addUser(UserRequestDTO requestDTO) {
 
-    if (userRepository.existsByEmail(requestDTO.getEmail())) {
-        throw new RuntimeException("Email already exists");
+        if (userRepository.existsByEmail(requestDTO.getEmail())) {
+            throw new RuntimeException("Email already exists");
+        }
+
+        Company company = companyRepository.findById(requestDTO.getCompanyId())
+                .orElseThrow(() -> new RuntimeException("Company not found with ID: " + requestDTO.getCompanyId()));
+
+        // Create mapping explicitly or ensure mapper skips company mapping
+        User user = mapper.map(requestDTO, User.class);
+
+        // Explicitly set the relationships/sensitive fields
+        user.setId(null); // Ensure ID isn't wrongly set from companyId
+        user.setPassword(passwordEncoder.encode(requestDTO.getPassword()));
+        user.setCompany(company);
+
+        User savedUser = userRepository.save(user);
+
+        notificationService.createNotification(
+                savedUser,
+                "Employee Added",
+                savedUser.getFirstName() + " " + savedUser.getLastName() + " has been added successfully.",
+                NotificationType.EMPLOYEE
+        );
+
+        UserResponseDTO response = mapper.map(savedUser, UserResponseDTO.class);
+        response.setUserId(savedUser.getId());
+        response.setCompanyId(company.getId());
+        response.setCompanyName(company.getCompanyName());
+
+        return response;
     }
 
-    Company company = companyRepository.findById(requestDTO.getCompanyId())
-            .orElseThrow(() -> new RuntimeException("Company not found with ID: " + requestDTO.getCompanyId()));
-
-    // Create mapping explicitly or ensure mapper skips company mapping
-    User user = mapper.map(requestDTO, User.class);
-
-    // Explicitly set the relationships/sensitive fields
-    user.setId(null); // Ensure ID isn't wrongly set from companyId
-    user.setPassword(passwordEncoder.encode(requestDTO.getPassword()));
-    user.setCompany(company);
-
-    User savedUser = userRepository.save(user);
-
-    UserResponseDTO response = mapper.map(savedUser, UserResponseDTO.class);
-    response.setUserId(savedUser.getId());
-    response.setCompanyId(company.getId());
-    response.setCompanyName(company.getCompanyName());
-
-    return response;
-}
     @Override
     public List<UserResponseDTO> getAllUsers() {
 
@@ -137,7 +151,6 @@ public UserResponseDTO addUser(UserRequestDTO requestDTO) {
     }
 
 
-
     @Override
     public UserResponseDTO updateProfile(Long userId, UpdateProfileDTO dto) {
 
@@ -150,6 +163,12 @@ public UserResponseDTO addUser(UserRequestDTO requestDTO) {
         user.setPhone(dto.getPhone());
 
         User updatedUser = userRepository.save(user);
+        notificationService.createNotification(
+                updatedUser,
+                "Employee Updated",
+                updatedUser.getFirstName() + " " + updatedUser.getLastName() + " profile has been updated successfully.",
+                NotificationType.EMPLOYEE
+        );
 
         UserResponseDTO response = mapper.map(updatedUser, UserResponseDTO.class);
 
@@ -168,7 +187,8 @@ public UserResponseDTO addUser(UserRequestDTO requestDTO) {
 
         userRepository.delete(user);
     }
-}
+    }
+
 
 
 
