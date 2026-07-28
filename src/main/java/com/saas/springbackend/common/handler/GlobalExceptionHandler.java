@@ -1,10 +1,7 @@
 package com.saas.springbackend.common.handler;
 
 import com.saas.springbackend.common.dto.ErrorResponseDto;
-import com.saas.springbackend.common.exception.CompanyAlreadyExistsException;
-import com.saas.springbackend.common.exception.EmailAlreadyExistsException;
-import com.saas.springbackend.common.exception.InvalidOperationException;
-import com.saas.springbackend.common.exception.InvalidRequestException;
+import com.saas.springbackend.common.exception.*;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -84,6 +81,73 @@ public ResponseEntity<ErrorResponseDto> handleInvalidRequestException(
         return ResponseEntity
                 .status(HttpStatus.CONFLICT)
                 .body(response);
+    }
+
+    //Payment related exceptions
+    @ExceptionHandler(PaymentNotFoundException.class)
+    public ResponseEntity<ErrorResponseDto> handlePaymentNotFound(
+            PaymentNotFoundException ex,
+            HttpServletRequest request) {
+
+        ErrorResponseDto error = new ErrorResponseDto(
+                LocalDateTime.now(),
+                HttpStatus.NOT_FOUND.value(),
+                HttpStatus.NOT_FOUND.getReasonPhrase(),
+                ex.getMessage(),
+                request.getRequestURI()
+        );
+
+        return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(UnsupportedPaymentMethodException.class)
+    public ResponseEntity<ErrorResponseDto> handleUnsupportedPaymentMethod(
+            UnsupportedPaymentMethodException ex,
+            HttpServletRequest request) {
+
+        ErrorResponseDto error = new ErrorResponseDto(
+                LocalDateTime.now(),
+                HttpStatus.BAD_REQUEST.value(),
+                HttpStatus.BAD_REQUEST.getReasonPhrase(),
+                ex.getMessage(),
+                request.getRequestURI()
+        );
+
+        return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+    }
+
+    //Invoice related exceptions
+    @ExceptionHandler(InvoiceNotFoundException.class)
+    public ResponseEntity<ErrorResponseDto> handleInvoiceNotFound(
+            InvoiceNotFoundException ex,
+            HttpServletRequest request) {
+
+        ErrorResponseDto error = new ErrorResponseDto(
+                LocalDateTime.now(),
+                HttpStatus.NOT_FOUND.value(),
+                HttpStatus.NOT_FOUND.getReasonPhrase(),
+                ex.getMessage(),
+                request.getRequestURI()
+        );
+
+        return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
+    }
+
+
+    @ExceptionHandler(DuplicateInvoiceException.class)
+    public ResponseEntity<ErrorResponseDto> handleDuplicateInvoice(
+            DuplicateInvoiceException ex,
+            HttpServletRequest request) {
+
+        ErrorResponseDto error = new ErrorResponseDto(
+                LocalDateTime.now(),
+                HttpStatus.CONFLICT.value(),
+                HttpStatus.CONFLICT.getReasonPhrase(),
+                ex.getMessage(),
+                request.getRequestURI()
+        );
+
+        return new ResponseEntity<>(error, HttpStatus.CONFLICT);
     }
 
 
