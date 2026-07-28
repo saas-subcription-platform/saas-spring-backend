@@ -2,6 +2,7 @@ package com.saas.springbackend.company.controller;
 
 import com.saas.springbackend.company.dtos.*;
 import com.saas.springbackend.company.service.CompanyService;
+import com.saas.springbackend.dashboard.dto.DashboardResponseDto;
 import com.saas.springbackend.user.entity.User;
 import com.saas.springbackend.user.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -54,5 +55,10 @@ public class CompanyController {
         companyService.updateCompanyProfile(requestDto);
 
         return ResponseEntity.ok("Company profile updated successfully");
+    }
+
+    @GetMapping("/admin/welcome")
+    public ResponseEntity<DashboardResponseDto> getDashboardDetails() {
+        return ResponseEntity.ok(companyService.getDashboardDetails());
     }
 }
