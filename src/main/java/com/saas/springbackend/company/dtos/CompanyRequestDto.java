@@ -22,6 +22,12 @@ public class CompanyRequestDto {
     @NotBlank(message = "Last name is required")
     private String lastName;
 
+    @NotBlank(message = "Phone number is required")
+    private String phone;
+
+    @NotBlank(message = "Department is required")
+    private String department;
+
     // Company Details
 
     @NotBlank(message = "Company name is required")
