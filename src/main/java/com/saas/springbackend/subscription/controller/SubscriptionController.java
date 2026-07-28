@@ -86,4 +86,18 @@ public class SubscriptionController {
                 )
         );
     }
+
+    @GetMapping("/my")
+    public ResponseEntity<ApiResponse<SubscriptionDetailsResponseDTO>> getMySubscription() {
+
+        SubscriptionDetailsResponseDTO response =
+                subscriptionService.getMySubscription();
+
+        return ResponseEntity.ok(
+                ApiResponse.success(
+                        "Subscription retrieved successfully.",
+                        response
+                )
+        );
+    }
 }
