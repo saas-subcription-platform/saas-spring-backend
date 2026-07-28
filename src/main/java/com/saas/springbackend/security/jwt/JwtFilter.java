@@ -34,7 +34,21 @@ public class JwtFilter extends OncePerRequestFilter {
             throws ServletException, IOException {
 
 //        System.out.println("JwtFilter Executed");
+//testing
+        String path = request.getServletPath();
 
+        // Skip JWT validation for public endpoints
+        if (path.startsWith("/api/subscription-plans")
+                || path.equals("/api/subscription-plans")
+                || path.equals("/login")
+                || path.equals("/register")
+                || path.equals("/forgot-password")
+                || path.equals("/reset-password")
+                || path.equals("/validate-reset-token")) {
+
+            filterChain.doFilter(request, response);
+            return;
+        }
 
 //  Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJraWxsIiwiaWF0IjoxNzIzMTgzNzExLCJleHAiOjE3MjMxODM4MTl9.5nf7dRzKRiuGurN2B9dHh_M5xiu73ZzWPr6rbhOTTHs
         String authHeader = request.getHeader("Authorization");

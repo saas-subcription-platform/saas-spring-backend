@@ -75,7 +75,9 @@ public class CompanyServiceImpl implements CompanyService{
         Company company = user.getCompany();
 
         CompanyProfileResponseDto response = new CompanyProfileResponseDto();
-
+        response.setCompany_id(company.getId());
+        response.setName(user.getFirstName() + " " + user.getLastName());
+        response.setEmail(user.getEmail());
         response.setCompanyName(company.getCompanyName());
         response.setPhone(company.getPhone());
         response.setAddress(company.getAddress());
