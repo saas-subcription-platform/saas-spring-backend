@@ -9,6 +9,10 @@ public class CompanyProfileResponseDto {
 
     private Long company_id;
 
+    private String name;
+
+    private String email;
+
     private String companyName;
 
     private String phone;
