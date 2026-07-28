@@ -8,6 +8,7 @@ import com.saas.springbackend.company.dtos.LoginRequest;
 import com.saas.springbackend.company.dtos.UpdateCompanyRequestDto;
 import com.saas.springbackend.company.entity.Company;
 import com.saas.springbackend.company.repository.CompanyRepository;
+import com.saas.springbackend.dashboard.dto.DashboardResponseDto;
 import com.saas.springbackend.security.jwt.JwtService;
 import com.saas.springbackend.user.entity.Role;
 import com.saas.springbackend.user.entity.User;
@@ -116,5 +117,24 @@ public class CompanyServiceImpl implements CompanyService{
         company.setZipCode(requestDto.getZipCode());
 
         companyRepository.save(company);
+    }
+
+    @Override
+    public DashboardResponseDto getDashboardDetails() {
+
+        Authentication authentication =
+                SecurityContextHolder.getContext().getAuthentication();
+
+        String email = authentication.getName();
+
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        Company company = user.getCompany();
+
+        return DashboardResponseDto.builder()
+                .adminName(user.getFirstName() + " " + user.getLastName())
+                .companyName(company.getCompanyName())
+                .build();
     }
 }
