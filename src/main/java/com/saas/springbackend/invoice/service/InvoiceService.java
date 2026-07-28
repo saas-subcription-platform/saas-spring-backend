@@ -1,8 +1,9 @@
 package com.saas.springbackend.invoice.service;
 
+import com.saas.springbackend.common.exception.DuplicateInvoiceException;
+import com.saas.springbackend.common.exception.InvoiceNotFoundException;
 import com.saas.springbackend.invoice.dto.InvoiceResponseDto;
 import com.saas.springbackend.invoice.entity.Invoice;
-import com.saas.springbackend.invoice.entity.InvoiceStatus;
 import com.saas.springbackend.invoice.repository.InvoiceRepository;
 import com.saas.springbackend.invoice.util.InvoiceGenerator;
 import com.saas.springbackend.invoice.util.InvoicePdfGenerator;
@@ -11,11 +12,7 @@ import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
-import java.math.BigDecimal;
-import java.math.RoundingMode;
-import java.time.LocalDate;
 import java.util.List;
-import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -46,7 +43,8 @@ public class InvoiceService {
 
     public InvoiceResponseDto getInvoiceById(Long id) {
         Invoice invoice = invoiceRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Invoice not found"));
+                .orElseThrow(() ->
+                        new InvoiceNotFoundException("Invoice not found with id: " + id));
 
         InvoiceResponseDto dto = modelMapper.map(invoice, InvoiceResponseDto.class);
 
@@ -59,7 +57,8 @@ public class InvoiceService {
     public InvoiceResponseDto createInvoice(Payment payment) {
 
         if (invoiceRepository.findByPaymentId(payment.getId()).isPresent()) {
-            throw new RuntimeException("Invoice already exists for this payment");
+            throw new DuplicateInvoiceException(
+                    "Invoice already exists for payment: " + payment.getId());
         }
 
         Invoice invoice = invoiceGenerator.generate(payment);
@@ -78,7 +77,8 @@ public class InvoiceService {
     public byte[] downloadInvoice(Long id) {
 
         Invoice invoice = invoiceRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Invoice not found"));
+                .orElseThrow(() ->
+                        new InvoiceNotFoundException("Invoice not found with id: " + id));
 
         return invoicePdfGenerator.generate(invoice);
     }

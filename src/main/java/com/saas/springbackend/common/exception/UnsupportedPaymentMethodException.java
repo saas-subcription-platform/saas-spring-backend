@@ -1,4 +1,8 @@
 package com.saas.springbackend.common.exception;
 
-public class abc {
+public class UnsupportedPaymentMethodException extends RuntimeException {
+
+    public UnsupportedPaymentMethodException(String message) {
+        super(message);
+    }
 }
