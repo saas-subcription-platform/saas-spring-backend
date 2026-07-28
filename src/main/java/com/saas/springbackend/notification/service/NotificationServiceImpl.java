@@ -37,6 +37,8 @@ public class NotificationServiceImpl implements NotificationService {
         notification.setType(type);
         notification.setStatus(NotificationStatus.UNREAD);
         notification.setUser(user);
+        // --- ADD THIS LINE ---
+        notification.setCompany(user.getCompany());
 
         Notification savedNotification =
                 notificationRepository.save(notification);

@@ -4,6 +4,7 @@ import com.saas.springbackend.user.dto.UpdateProfileDTO;
 import com.saas.springbackend.user.dto.UserRequestDTO;
 import com.saas.springbackend.user.dto.UserResponseDTO;
 import com.saas.springbackend.user.service.UserService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,11 +21,8 @@ public class UserController {
 
     // Add User
     @PostMapping("/add")
-    public ResponseEntity<UserResponseDTO> addUser(
-            @RequestBody UserRequestDTO requestDTO) {
-
-        return ResponseEntity.status(HttpStatus.CREATED)
-                .body(userService.addUser(requestDTO));
+    public ResponseEntity<UserResponseDTO> addUser(@Valid @RequestBody UserRequestDTO requestDTO) {
+        return ResponseEntity.ok(userService.addUser(requestDTO));
     }
 
     // Get All Users

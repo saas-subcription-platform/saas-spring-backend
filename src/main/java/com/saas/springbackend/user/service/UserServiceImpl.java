@@ -2,6 +2,7 @@ package com.saas.springbackend.user.service;
 
 import com.saas.springbackend.company.dtos.LoginRequest;
 import com.saas.springbackend.company.dtos.LoginResponseDto;
+import com.saas.springbackend.notification.repository.NotificationRepository;
 import com.saas.springbackend.security.jwt.JwtService;
 import com.saas.springbackend.user.dto.*;
 import com.saas.springbackend.user.repository.UserRepository;
@@ -41,6 +42,7 @@ public class UserServiceImpl implements UserService {
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
     private final NotificationService notificationService;
+    private final NotificationRepository notificationRepository;
 
     private final CompanyRepository companyRepository;
     private final PasswordEncoder passwordEncoder;
@@ -89,9 +91,12 @@ public class UserServiceImpl implements UserService {
             throw new RuntimeException("Email already exists");
         }
 
+        if (requestDTO.getCompanyId() == null) {
+            throw new IllegalArgumentException("Company ID is missing from the request payload.");
+        }
+
         Company company = companyRepository.findById(requestDTO.getCompanyId())
                 .orElseThrow(() -> new RuntimeException("Company not found with ID: " + requestDTO.getCompanyId()));
-
         // Create mapping explicitly or ensure mapper skips company mapping
         User user = mapper.map(requestDTO, User.class);
 
@@ -184,7 +189,7 @@ public class UserServiceImpl implements UserService {
 
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
-
+        notificationRepository.deleteByUserId(userId);
         userRepository.delete(user);
     }
     }
