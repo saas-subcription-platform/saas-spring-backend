@@ -10,7 +10,9 @@ import lombok.experimental.SuperBuilder;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -66,7 +68,7 @@ public class Subscription extends BaseClass {
             fetch = FetchType.LAZY
     )
     @Builder.Default
-    private Set<SubscriptionHistory> subscriptionHistory = new HashSet<>();
+    private List<SubscriptionHistory> subscriptionHistory = new ArrayList<>();
 
     public void addHistory(SubscriptionHistory history) {
         subscriptionHistory.add(history);

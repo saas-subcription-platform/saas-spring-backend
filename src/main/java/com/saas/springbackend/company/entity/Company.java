@@ -47,18 +47,18 @@ public class Company
     @Column(name = "gst_number")
     private String gstNumber;
 
-  @OneToMany(
-         mappedBy = "company",
-         cascade = CascadeType.ALL,
-           orphanRemoval = true
-   )
-  private List<User> users = new ArrayList<>();
+    @OneToMany(
+            mappedBy = "company",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
+    )
+    private List<User> users = new ArrayList<>();
 
-//    @OneToOne(
-//            mappedBy = "company",
-//            cascade = CascadeType.ALL,
-//            orphanRemoval = true,
-//            fetch = FetchType.LAZY
-//    )
-//    private Subscription subscription;
+    @OneToOne(
+            mappedBy = "company",
+            cascade = CascadeType.ALL,
+            fetch = FetchType.LAZY
+    )
+    private Subscription subscription;
+
 }
