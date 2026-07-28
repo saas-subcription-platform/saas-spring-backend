@@ -42,9 +42,13 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
 
-                        .requestMatchers("/register",
+                        .requestMatchers(
+                                "/register",
                                 "/login",
                                 "/",
+                                "/forgot-password",
+                                "/validate-reset-token",
+                                "/reset-password",
 //   add routes here that you want to make public (or for testing)
                                 "/admin/users/**",
                                 "/swagger-ui/**",

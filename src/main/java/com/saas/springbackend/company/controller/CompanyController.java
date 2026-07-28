@@ -2,13 +2,18 @@ package com.saas.springbackend.company.controller;
 
 import com.saas.springbackend.company.dtos.CompanyRequestDto;
 import com.saas.springbackend.company.dtos.LoginRequest;
+import com.saas.springbackend.company.dtos.LoginResponseDto;
 import com.saas.springbackend.company.service.CompanyService;
 import com.saas.springbackend.user.entity.User;
 import com.saas.springbackend.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Map;
 
 @RestController
 @ResponseBody
@@ -25,8 +30,16 @@ public class CompanyController {
     }
 
     @PostMapping("/login")
-    public String loginCompany(@RequestBody LoginRequest request) {
-        return userService.verify(request);
+    public LoginResponseDto loginCompany(@RequestBody LoginRequest request)  {
+
+            try {
+                return userService.verify(request);
+            } catch (BadCredentialsException e) {
+                throw new  BadCredentialsException(e.getMessage());
+            } catch (Exception e) {
+                throw new RuntimeException(e.getMessage());
+            }
+
     }
 
     @GetMapping("/admin/dashboard")

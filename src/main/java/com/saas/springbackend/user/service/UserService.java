@@ -1,6 +1,8 @@
 package com.saas.springbackend.user.service;
 
 import com.saas.springbackend.company.dtos.LoginRequest;
+import com.saas.springbackend.company.dtos.LoginResponseDto;
+
 import com.saas.springbackend.user.dto.UpdateProfileDTO;
 import com.saas.springbackend.user.dto.UserRequestDTO;
 import com.saas.springbackend.user.dto.UserResponseDTO;
@@ -8,9 +10,8 @@ import com.saas.springbackend.user.dto.UserResponseDTO;
 import java.util.List;
 
 public interface UserService {
-
-    // Existing method
-    String verify(LoginRequest request);
+  
+    LoginResponseDto verify(LoginRequest request);
 
     // User Management
     UserResponseDTO addUser(UserRequestDTO requestDTO);
