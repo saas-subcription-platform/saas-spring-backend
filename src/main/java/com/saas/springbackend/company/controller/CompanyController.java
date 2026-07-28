@@ -1,8 +1,6 @@
 package com.saas.springbackend.company.controller;
 
-import com.saas.springbackend.company.dtos.CompanyRequestDto;
-import com.saas.springbackend.company.dtos.LoginRequest;
-import com.saas.springbackend.company.dtos.LoginResponseDto;
+import com.saas.springbackend.company.dtos.*;
 import com.saas.springbackend.company.service.CompanyService;
 import com.saas.springbackend.user.entity.User;
 import com.saas.springbackend.user.service.UserService;
@@ -42,8 +40,19 @@ public class CompanyController {
 
     }
 
-    @GetMapping("/admin/dashboard")
-    public String dashboard() {
-        return "This is Secured Page";
+    @GetMapping("/admin/company")
+    public ResponseEntity<CompanyProfileResponseDto> getCompanyProfile() {
+
+        return ResponseEntity.ok(companyService.getCompanyProfile());
+
+    }
+
+    @PutMapping("/admin/company/edit")
+    public ResponseEntity<String> updateCompanyProfile(
+            @RequestBody UpdateCompanyRequestDto requestDto) {
+
+        companyService.updateCompanyProfile(requestDto);
+
+        return ResponseEntity.ok("Company profile updated successfully");
     }
 }
