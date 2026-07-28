@@ -116,6 +116,13 @@
 			<version>1.4.9</version>
 		</dependency>
 
+		<!-- JSON Dependency -->
+		<dependency>
+			<groupId>org.json</groupId>
+			<artifactId>json</artifactId>
+			<version>20250517</version>
+		</dependency>
+
 		<!-- Dependency for PDF invoice generation -->
 		<dependency>
 			<groupId>com.github.librepdf</groupId>
