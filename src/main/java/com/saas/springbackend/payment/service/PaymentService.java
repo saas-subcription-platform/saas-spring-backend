@@ -21,6 +21,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 
 @Service
 @RequiredArgsConstructor
@@ -39,7 +40,8 @@ public class PaymentService {
 
         int amountInPaise = request.getAmount()
                 .multiply(BigDecimal.valueOf(100))
-                .intValueExact();
+                .setScale(0, RoundingMode.HALF_UP)
+                .intValue();
         JSONObject orderRequest = new JSONObject();
         orderRequest.put("amount", amountInPaise);
         orderRequest.put("currency", "INR");
