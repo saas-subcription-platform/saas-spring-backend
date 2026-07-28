@@ -3,6 +3,7 @@ package com.saas.springbackend.subscription.service;
 import com.saas.springbackend.company.entity.Company;
 import com.saas.springbackend.common.exception.ResourceNotFoundException;
 import com.saas.springbackend.subscription.dtos.request.ChangePlanRequestDTO;
+import com.saas.springbackend.subscription.dtos.response.SubscriptionDetailsResponseDTO;
 import com.saas.springbackend.subscription.factory.SubscriptionFactory;
 import com.saas.springbackend.subscription.validator.SubscriptionValidator;
 import com.saas.springbackend.subscription.dtos.request.SubscribeRequestDTO;
@@ -10,7 +11,10 @@ import com.saas.springbackend.subscription.dtos.response.SubscriptionResponseDTO
 import com.saas.springbackend.subscription.entity.*;
 import com.saas.springbackend.subscription.mapper.SubscriptionMapper;
 import com.saas.springbackend.subscription.repositories.*;
+import com.saas.springbackend.user.entity.User;
+import com.saas.springbackend.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,6 +29,7 @@ public class SubscriptionServiceImpl implements SubscriptionService{
     private final SubscriptionMapper subscriptionMapper;
     private final SubscriptionValidator subscriptionValidator;
     private final SubscriptionFactory subscriptionFactory;
+    private final UserRepository userRepository;
 
     @Override
     public SubscriptionResponseDTO subscribe(SubscribeRequestDTO request) {
@@ -194,5 +199,48 @@ public class SubscriptionServiceImpl implements SubscriptionService{
         }
 
         return subscriptionMapper.toResponse(saved);
+    }
+
+    @Override
+    public SubscriptionDetailsResponseDTO getMySubscription() {
+
+        String email = SecurityContextHolder
+                .getContext()
+                .getAuthentication()
+                .getName();
+
+        System.out.println("Logged In Email = " + email);
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException("User not found"));
+
+        Company company = user.getCompany();
+
+        Subscription subscription = subscriptionRepository
+                .findByCompanyId(company.getId())
+                .orElseThrow(() ->
+                        new ResourceNotFoundException("Subscription not found"));
+
+        return SubscriptionDetailsResponseDTO.builder()
+                .subscriptionId(subscription.getId())
+                .companyName(company.getCompanyName())
+                .adminName(user.getFirstName() + " " + user.getLastName())
+                .planName(subscription.getSubscriptionPlan().getPlanName())
+                .maximumUsers(subscription.getSubscriptionPlan().getMaximumUsers())
+                .amount(subscription.getAmount())
+                .startDate(subscription.getStartDate())
+                .endDate(subscription.getEndDate())
+                .renewalDate(subscription.getRenewalDate())
+                .status(subscription.getStatus().name())
+                .autoRenew(subscription.isAutoRenew())
+                .features(
+                        subscription.getSubscriptionPlan()
+                                .getPlanFeatures()
+                                .stream()
+                                .filter(PlanFeature::isEnabled)
+                                .map(PlanFeature::getFeatureName)
+                                .toList()
+                )
+                .build();
     }
 }
