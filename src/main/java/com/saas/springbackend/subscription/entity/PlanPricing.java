@@ -2,7 +2,7 @@ package com.saas.springbackend.subscription.entity;
 
 import com.saas.springbackend.common.entity.BaseClass;
 import jakarta.persistence.*;
-import lombok.Builder;
+import lombok.*;
 import lombok.experimental.SuperBuilder;
 
 import java.math.BigDecimal;
@@ -10,6 +10,10 @@ import java.math.BigDecimal;
 @Entity
 @Table(name = "plan_pricing")
 @SuperBuilder
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
 @AttributeOverride(name = "id",column = @Column(name = "plan_pricing_id"))
 public class PlanPricing extends BaseClass {
 

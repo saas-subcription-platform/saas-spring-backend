@@ -50,6 +50,10 @@ public class SecurityConfig {
                                 "/validate-reset-token",
                                 "/reset-password",
 //   add routes here that you want to make public (or for testing)
+                                "/api/subscription-plans",
+                                "/api/subscription-plans/**",
+                                "/api/subscriptions",
+                                "/api/subscriptions/**",
                                 "/admin/users/**",
                                 "/swagger-ui/**",
                                 "/v3/api-docs/**",
