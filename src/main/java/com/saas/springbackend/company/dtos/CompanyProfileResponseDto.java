@@ -7,6 +7,8 @@ import lombok.Setter;
 @Setter
 public class CompanyProfileResponseDto {
 
+    private Long company_id;
+
     private String companyName;
 
     private String phone;
