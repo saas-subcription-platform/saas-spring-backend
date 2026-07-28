@@ -33,11 +33,11 @@ public class User
     private String password;
 
 
-    @Column(nullable = false)
+    @Column(nullable = true)
     private String phone;
 
 
-    @Column(nullable = false)
+    @Column(nullable = true)
     private String department;
 
     @Enumerated(EnumType.STRING)
