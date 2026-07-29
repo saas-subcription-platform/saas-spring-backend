@@ -1,5 +1,6 @@
 package com.saas.springbackend.subscription.dtos.response;
 
+import com.saas.springbackend.subscription.entity.BillingCycle;
 import lombok.*;
 
 import java.math.BigDecimal;
@@ -34,6 +35,8 @@ public class SubscriptionDetailsResponseDTO {
     private String status;
 
     private Boolean autoRenew;
+
+    private BillingCycle billingCycle;
 
     private List<String> features;
 }

@@ -28,7 +28,7 @@ import java.util.List;
 )
 public class Payment extends BaseClass {
 
-    @Column(name = "subscription_id", nullable = false)
+    @Column(name = "subscription_id")
     private Long subscriptionId;
 
     @Positive

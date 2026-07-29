@@ -1,6 +1,7 @@
 package com.saas.springbackend.subscription.service;
 
 import com.saas.springbackend.subscription.dtos.request.ChangePlanRequestDTO;
+import com.saas.springbackend.subscription.dtos.request.RenewSubscriptionRequestDTO;
 import com.saas.springbackend.subscription.dtos.request.SubscribeRequestDTO;
 import com.saas.springbackend.subscription.dtos.response.SubscriptionDetailsResponseDTO;
 import com.saas.springbackend.subscription.dtos.response.SubscriptionResponseDTO;
@@ -23,7 +24,10 @@ public interface SubscriptionService {
      * renews subscription and save in entity.
      * @return Subscription details.
      */
-    SubscriptionResponseDTO renewSubscription(Long subscriptionId);
+    SubscriptionResponseDTO renewSubscription(
+            Long subscriptionId,
+            RenewSubscriptionRequestDTO request
+    );
 
     /**
      * Cancel subscription details.

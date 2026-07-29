@@ -4,7 +4,12 @@ import com.razorpay.Order;
 import com.razorpay.RazorpayClient;
 import com.razorpay.RazorpayException;
 import com.saas.springbackend.invoice.service.InvoiceService;
+import com.saas.springbackend.payment.dto.PaymentFailureRequestDto;
+import com.saas.springbackend.subscription.entity.Subscription;
+import com.saas.springbackend.subscription.repositories.SubscriptionRepository;
 import com.saas.springbackend.transaction.service.TransactionService;
+import com.saas.springbackend.user.entity.User;
+import com.saas.springbackend.user.repository.UserRepository;
 import org.json.JSONObject;
 import com.saas.springbackend.common.exception.PaymentNotFoundException;
 import com.saas.springbackend.payment.dto.CreatePaymentRequestDto;
@@ -17,6 +22,8 @@ import com.saas.springbackend.payment.util.RazorpayPaymentHelper;
 import com.saas.springbackend.transaction.entity.PaymentMethod;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -33,6 +40,8 @@ public class PaymentService {
     private final RazorpayPaymentHelper razorpayPaymentHelper;
     private final ModelMapper modelMapper;
     private final InvoiceService invoiceService;
+    private final SubscriptionRepository subscriptionRepository;
+    private final UserRepository userRepository;
 
 
     //To create new payment
@@ -49,7 +58,7 @@ public class PaymentService {
         Order razorpayOrder = razorpayClient.orders.create(orderRequest);
 
         Payment payment = Payment.builder()
-                .subscriptionId(request.getSubscriptionId())
+//                .subscriptionId(request.getSubscriptionId())
                 .amount(request.getAmount())
                 .status(PaymentStatus.PENDING)
                 .gatewayOrderId(razorpayOrder.get("id"))
@@ -101,5 +110,66 @@ public class PaymentService {
 
         invoiceService.createInvoice(savedPayment);
         return true;
+    }
+
+
+    //Failure handling
+    @Transactional
+    public void markPaymentFailed(PaymentFailureRequestDto request) {
+        System.out.println("===== markPaymentFailed() CALLED =====");
+        System.out.println(request);
+        Payment payment = paymentRepository
+                .findByGatewayOrderId(request.getRazorpayOrderId())
+                .orElseThrow(() ->
+                        new PaymentNotFoundException("Payment not found")
+                );
+
+        if (payment.getStatus() == PaymentStatus.SUCCESS) {
+            return;
+        }
+
+        // Assign current subscription if payment doesn't already have one
+        if (payment.getSubscriptionId() == null) {
+
+            Long subscriptionId = getCurrentCompanySubscriptionId();
+
+            payment.setSubscriptionId(subscriptionId);
+        }
+
+
+        payment.setStatus(PaymentStatus.FAILED);
+
+        System.out.println("Updating payment status to FAILED");
+
+        Payment savedPayment = paymentRepository.save(payment);
+
+        transactionService.createFailedTransaction(
+                savedPayment,
+                request.getRazorpayPaymentId(),
+                request.getFailureReason()
+        );
+
+        System.out.println("Failed transaction created");
+    }
+
+    private Long getCurrentCompanySubscriptionId() {
+
+        Authentication authentication =
+                SecurityContextHolder.getContext().getAuthentication();
+
+        String email = authentication.getName();
+
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() ->
+                        new RuntimeException("User not found"));
+
+        Long companyId = user.getCompany().getId();
+
+        Subscription subscription =
+                subscriptionRepository.findByCompanyId(companyId)
+                        .orElseThrow(() ->
+                                new RuntimeException("Subscription not found"));
+
+        return subscription.getId();
     }
 }
