@@ -3,9 +3,13 @@ package com.saas.springbackend.user.entity;
 //import com.saas.springbackend.common.entity.BaseClass;
 import com.saas.springbackend.common.entity.BaseClass;
 import com.saas.springbackend.company.entity.Company;
+import com.saas.springbackend.notification.entity.Notification;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "users")
@@ -50,4 +54,9 @@ public class User
     @JoinColumn(name = "company_id", nullable = false)
     @ToString.Exclude
     private Company company;
+
+    @OneToMany(mappedBy = "user",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true)
+    private List<Notification> notifications = new ArrayList<>();
 }

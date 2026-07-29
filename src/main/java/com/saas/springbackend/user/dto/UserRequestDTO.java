@@ -29,5 +29,5 @@ public class UserRequestDTO {
 
     private UserStatus status;
 
-    private Long companyId;
+    //private Long companyId;
 }

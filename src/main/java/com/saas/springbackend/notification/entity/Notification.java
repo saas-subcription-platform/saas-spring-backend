@@ -1,6 +1,7 @@
 package com.saas.springbackend.notification.entity;
 
 import com.saas.springbackend.common.entity.BaseClass;
+import com.saas.springbackend.company.entity.Company;
 import com.saas.springbackend.user.entity.User;
 import jakarta.persistence.*;
 import lombok.*;
@@ -36,4 +37,9 @@ public class Notification extends BaseClass {
     @JoinColumn(name = "user_id", nullable = false)
     @ToString.Exclude
     private User user;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "company_id", nullable = false)
+    @ToString.Exclude
+    private Company company;
 }
