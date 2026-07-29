@@ -4,6 +4,7 @@ import com.razorpay.Order;
 import com.razorpay.RazorpayClient;
 import com.razorpay.RazorpayException;
 import com.saas.springbackend.invoice.service.InvoiceService;
+import com.saas.springbackend.payment.dto.PaymentFailureRequestDto;
 import com.saas.springbackend.transaction.service.TransactionService;
 import org.json.JSONObject;
 import com.saas.springbackend.common.exception.PaymentNotFoundException;
@@ -101,5 +102,31 @@ public class PaymentService {
 
         invoiceService.createInvoice(savedPayment);
         return true;
+    }
+
+
+    //Failure handling
+    @Transactional
+    public void markPaymentFailed(PaymentFailureRequestDto request) {
+
+        Payment payment = paymentRepository
+                .findByGatewayOrderId(request.getRazorpayOrderId())
+                .orElseThrow(() ->
+                        new PaymentNotFoundException("Payment not found")
+                );
+
+        if (payment.getStatus() == PaymentStatus.SUCCESS) {
+            return;
+        }
+
+        payment.setStatus(PaymentStatus.FAILED);
+
+        Payment savedPayment = paymentRepository.save(payment);
+
+        transactionService.createFailedTransaction(
+                savedPayment,
+                request.getRazorpayPaymentId(),
+                request.getFailureReason()
+        );
     }
 }

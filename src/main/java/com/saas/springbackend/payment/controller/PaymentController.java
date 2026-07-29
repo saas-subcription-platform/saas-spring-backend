@@ -3,6 +3,7 @@ package com.saas.springbackend.payment.controller;
 import com.razorpay.RazorpayException;
 import com.saas.springbackend.payment.dto.CreatePaymentRequestDto;
 import com.saas.springbackend.payment.dto.CreatePaymentResponseDto;
+import com.saas.springbackend.payment.dto.PaymentFailureRequestDto;
 import com.saas.springbackend.payment.dto.VerifyPaymentRequestDto;
 import com.saas.springbackend.payment.service.PaymentService;
 import jakarta.validation.Valid;
@@ -38,5 +39,14 @@ public class PaymentController {
                 .badRequest()
                 .body("Payment verification failed");
 
+    }
+
+    @PostMapping("/failed")
+    public ResponseEntity<?> paymentFailed(
+            @RequestBody PaymentFailureRequestDto request) {
+
+        paymentService.markPaymentFailed(request);
+
+        return ResponseEntity.ok("Payment failure recorded");
     }
 }
