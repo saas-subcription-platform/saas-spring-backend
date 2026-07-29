@@ -145,4 +145,33 @@ public class NotificationServiceImpl implements NotificationService {
         return dto;
     }
 
+    @Override
+    public NotificationResponseDTO getLatestNotification() {
+
+        // Get logged-in admin
+        User admin = getLoggedInUser();
+
+        Long companyId = admin.getCompany().getId();
+
+        // Get all company notifications (already ordered newest first)
+        List<Notification> notifications =
+                notificationRepository.findByCompanyIdOrderByCreatedAtDesc(companyId);
+
+        // No notifications available
+        if (notifications.isEmpty()) {
+            throw new RuntimeException("No notifications found.");
+        }
+
+        // Latest notification
+        Notification latestNotification = notifications.get(0);
+
+        NotificationResponseDTO dto =
+                mapper.map(latestNotification, NotificationResponseDTO.class);
+
+        dto.setNotificationId(latestNotification.getId());
+        dto.setUserId(latestNotification.getUser().getId());
+
+        return dto;
+    }
+
 }

@@ -20,5 +20,7 @@ public interface NotificationService {
 
     void clearAllNotifications();
 
+    NotificationResponseDTO getLatestNotification();
+
     NotificationResponseDTO markAsRead(Long notificationId);
 }

@@ -9,13 +9,14 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface NotificationRepository extends JpaRepository<Notification, Long> {
 
     List<Notification> findByUserIdOrderByCreatedAtDesc(Long userId);
     List<Notification> findByCompanyIdOrderByCreatedAtDesc(Long companyId);
-
+    Optional<Notification> findFirstByUserIdOrderByCreatedAtDesc(Long userId);
     @Transactional
     void deleteByUserId(Long userId);
 

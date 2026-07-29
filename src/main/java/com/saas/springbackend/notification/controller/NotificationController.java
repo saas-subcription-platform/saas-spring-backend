@@ -49,4 +49,12 @@ public class NotificationController {
 
         return ResponseEntity.ok("All notifications cleared.");
     }
+
+    @GetMapping("/latest")
+    public ResponseEntity<NotificationResponseDTO> getLatestNotification() {
+
+        return ResponseEntity.ok(
+                notificationService.getLatestNotification()
+        );
+    }
 }
