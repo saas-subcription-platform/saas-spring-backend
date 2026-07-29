@@ -31,7 +31,7 @@ public class NotificationServiceImpl implements NotificationService {
             NotificationType type) {
 
         Notification notification = new Notification();
-
+        notification.setCompany(user.getCompany());
         notification.setTitle(title);
         notification.setMessage(message);
         notification.setType(type);
