@@ -12,4 +12,7 @@ public class ChangePlanRequestDTO {
 
     @NotNull(message = "Pricing ID is required")
     private Long pricingId;
+
+    @NotNull(message = "Payment ID is required")
+    private Long paymentId;
 }

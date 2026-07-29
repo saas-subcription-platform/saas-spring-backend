@@ -57,14 +57,20 @@ public class SubscriptionController {
     }
 
     @PostMapping("/{subscriptionId}/renew")
-    public ResponseEntity<SubscriptionResponseDTO> renewSubscription(
-            @PathVariable Long subscriptionId) {
+    public ResponseEntity<ApiResponse<SubscriptionResponseDTO>> renewSubscription(
+            @PathVariable Long subscriptionId,
+            @RequestBody RenewSubscriptionRequestDTO request) {
+
+        SubscriptionResponseDTO response =
+                subscriptionService.renewSubscription(subscriptionId, request);
 
         return ResponseEntity.ok(
-                subscriptionService.renewSubscription(subscriptionId)
+                ApiResponse.success(
+                        "Subscription renewed successfully",
+                        response
+                )
         );
     }
-
     @PostMapping("/{subscriptionId}/cancel")
     public ResponseEntity<SubscriptionResponseDTO> cancelSubscription(
             @PathVariable Long subscriptionId) {
