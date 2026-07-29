@@ -108,8 +108,11 @@ public class NotificationServiceImpl implements NotificationService {
 
         Authentication authentication =
                 SecurityContextHolder.getContext().getAuthentication();
+        System.out.println("Authentication = " + authentication);
 
         String email = authentication.getName();
+
+        System.out.println("Email from Security = " + email);
 
         return userRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("User not found"));
@@ -159,7 +162,7 @@ public class NotificationServiceImpl implements NotificationService {
 
         // No notifications available
         if (notifications.isEmpty()) {
-            throw new RuntimeException("No notifications found.");
+            return null;
         }
 
         // Latest notification
