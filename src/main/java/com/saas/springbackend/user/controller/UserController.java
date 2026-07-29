@@ -59,9 +59,15 @@ public class UserController {
         return ResponseEntity.ok("User deleted successfully");
     }
 
+
     @GetMapping("/company/{companyId}")
     public ResponseEntity<List<UserResponseDTO>> getUsersByCompany(@PathVariable Long companyId) {
         List<UserResponseDTO> users = userService.getUsersByCompanyId(companyId);
         return ResponseEntity.ok(users);
+    }
+    @GetMapping("/me")
+    public ResponseEntity<UserResponseDTO> getCurrentUser() {
+        return ResponseEntity.ok(userService.getCurrentUser());
+
     }
 }

@@ -13,6 +13,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import com.saas.springbackend.notification.service.NotificationService;
 import com.saas.springbackend.notification.entity.NotificationType;
@@ -22,17 +23,12 @@ import com.saas.springbackend.user.entity.User;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.List;
+
 import java.util.stream.Collectors;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.saas.springbackend.company.entity.Company;
-import com.saas.springbackend.company.repository.CompanyRepository;
-import com.saas.springbackend.user.entity.User;
-import org.springframework.security.crypto.password.PasswordEncoder;
 
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -194,6 +190,7 @@ public class UserServiceImpl implements UserService {
         notificationRepository.deleteByUserId(userId);
         userRepository.delete(user);
     }
+
     @Override
     public List<UserResponseDTO> getUsersByCompanyId(Long companyId) {
         List<User> users = userRepository.findByCompanyId(companyId);
@@ -201,7 +198,29 @@ public class UserServiceImpl implements UserService {
         return users.stream()
                 .map(this::mapToUserResponseDTO) // or use ModelMapper / your mapping helper
                 .collect(Collectors.toList());
+
     }
+    @Override
+    public UserResponseDTO getCurrentUser() {
+
+        Authentication authentication =
+                SecurityContextHolder.getContext().getAuthentication();
+
+        String email = authentication.getName();
+
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        UserResponseDTO dto = mapper.map(user, UserResponseDTO.class);
+
+        dto.setUserId(user.getId());
+        dto.setCompanyId(user.getCompany().getId());
+        dto.setCompanyName(user.getCompany().getCompanyName());
+
+        return dto;
+
+    }
+
 
     @Autowired
     private ModelMapper modelMapper;

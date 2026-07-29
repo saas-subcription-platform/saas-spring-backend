@@ -32,10 +32,8 @@ public class User
     @ToString.Exclude
     private String password;
 
-
     @Column(nullable = true)
     private String phone;
-
 
     @Column(nullable = true)
     private String department;
