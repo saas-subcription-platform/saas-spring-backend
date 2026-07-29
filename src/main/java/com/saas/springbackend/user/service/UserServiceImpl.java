@@ -23,6 +23,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.List;
 import java.util.stream.Collectors;
+import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import com.saas.springbackend.company.entity.Company;
 import com.saas.springbackend.company.repository.CompanyRepository;
@@ -192,7 +194,22 @@ public class UserServiceImpl implements UserService {
         notificationRepository.deleteByUserId(userId);
         userRepository.delete(user);
     }
+    @Override
+    public List<UserResponseDTO> getUsersByCompanyId(Long companyId) {
+        List<User> users = userRepository.findByCompanyId(companyId);
+
+        return users.stream()
+                .map(this::mapToUserResponseDTO) // or use ModelMapper / your mapping helper
+                .collect(Collectors.toList());
     }
+
+    @Autowired
+    private ModelMapper modelMapper;
+    private UserResponseDTO mapToUserResponseDTO(User user) {
+        return modelMapper.map(user, UserResponseDTO.class);
+    }
+}
+
 
 
 

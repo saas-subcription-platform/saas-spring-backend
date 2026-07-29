@@ -26,3 +26,4 @@ public interface NotificationRepository
     @Query("DELETE FROM Notification n WHERE n.user.id = :userId")
     void deleteByUserId(@Param("userId") Long userId);
 }
+

@@ -23,4 +23,6 @@ public interface UserService {
     UserResponseDTO updateProfile(Long userId, UpdateProfileDTO dto);
 
     void deleteUser(Long userId);
+
+    List<UserResponseDTO> getUsersByCompanyId(Long companyId);
 }
