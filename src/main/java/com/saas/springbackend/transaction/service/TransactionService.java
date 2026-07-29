@@ -51,6 +51,7 @@ public class TransactionService {
                 .toList();
     }
 
+    //To handle successful transaction
     public void createTransaction(
             Payment payment,
             PaymentMethod paymentMethod,
@@ -63,6 +64,26 @@ public class TransactionService {
                 .status(TransactionStatus.SUCCESS)
                 .gatewayPaymentId(gatewayPaymentId)
                 .remarks("Payment verified successfully")
+                .build();
+
+        transactionRepository.save(transaction);
+    }
+
+
+    //To handle failed transaction
+    public void createFailedTransaction(
+            Payment payment,
+            String gatewayPaymentId,
+            String failureReason) {
+
+        Transaction transaction = Transaction.builder()
+                .payment(payment)
+                .amount(payment.getAmount())
+                .paymentMethod(payment.getPaymentMethod())
+                .status(TransactionStatus.FAILED)
+                .gatewayPaymentId(gatewayPaymentId)
+                .failureReason(failureReason)
+                .remarks("Payment failed")
                 .build();
 
         transactionRepository.save(transaction);
