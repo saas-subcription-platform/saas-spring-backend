@@ -12,13 +12,18 @@ import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.stream.Collectors;
+
+
+import com.saas.springbackend.user.repository.UserRepository;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 @Service
 @Transactional
 @RequiredArgsConstructor
 public class NotificationServiceImpl implements NotificationService {
 
+    private final UserRepository userRepository;
     private final NotificationRepository notificationRepository;
 
     private final ModelMapper mapper;
@@ -50,11 +55,16 @@ public class NotificationServiceImpl implements NotificationService {
         return response;
     }
 
+
     @Override
-    public List<NotificationResponseDTO> getAllNotifications(Long userId) {
+    public List<NotificationResponseDTO> getAllNotifications() {
+
+        User admin = getLoggedInUser();
+
+        Long companyId = admin.getCompany().getId();
 
         return notificationRepository
-                .findByUserIdOrderByCreatedAtDesc(userId)
+                .findByCompanyIdOrderByCreatedAtDesc(companyId)
                 .stream()
                 .map(notification -> {
 
@@ -62,53 +72,77 @@ public class NotificationServiceImpl implements NotificationService {
                             mapper.map(notification, NotificationResponseDTO.class);
 
                     dto.setNotificationId(notification.getId());
-                    dto.setUserId(userId);
+                    dto.setUserId(notification.getUser().getId());
 
                     return dto;
-
                 })
-                .collect(Collectors.toList());
+                .toList();
+    }
+
+    @Transactional
+    @Override
+    public void markAllAsRead() {
+        User admin = getLoggedInUser();
+        Long companyId = admin.getCompany().getId();
+
+        // Direct DB update instead of looping + saveAll
+        notificationRepository.markAllAsReadByCompanyId(companyId);
+    }
+
+
+
+
+    @Override
+    public void clearAllNotifications() {
+
+        User admin = getLoggedInUser();
+
+        Long companyId = admin.getCompany().getId();
+
+        List<Notification> notifications =
+                notificationRepository.findByCompanyIdOrderByCreatedAtDesc(companyId);
+
+        notificationRepository.deleteAll(notifications);
+    }
+    private User getLoggedInUser() {
+
+        Authentication authentication =
+                SecurityContextHolder.getContext().getAuthentication();
+
+        String email = authentication.getName();
+
+        return userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User not found"));
     }
 
     @Override
     public NotificationResponseDTO markAsRead(Long notificationId) {
 
-        Notification notification = notificationRepository.findById(notificationId)
-                .orElseThrow(() ->
-                        new RuntimeException("Notification not found"));
+
+        Notification notification =
+                notificationRepository.findById(notificationId)
+                        .orElseThrow(() ->
+                                new RuntimeException("Notification not found"));
+
 
         notification.setStatus(NotificationStatus.READ);
+
 
         Notification updatedNotification =
                 notificationRepository.save(notification);
 
-        NotificationResponseDTO response =
-                mapper.map(updatedNotification, NotificationResponseDTO.class);
 
-        response.setNotificationId(updatedNotification.getId());
-        response.setUserId(updatedNotification.getUser().getId());
+        NotificationResponseDTO dto =
+                mapper.map(updatedNotification,
+                        NotificationResponseDTO.class);
 
-        return response;
+
+        dto.setNotificationId(updatedNotification.getId());
+
+        dto.setUserId(updatedNotification.getUser().getId());
+
+
+        return dto;
     }
 
-    @Override
-    public void markAllAsRead(Long userId) {
-
-        List<Notification> notifications =
-                notificationRepository.findByUserIdOrderByCreatedAtDesc(userId);
-
-        notifications.forEach(notification ->
-                notification.setStatus(NotificationStatus.READ));
-
-        notificationRepository.saveAll(notifications);
-    }
-
-    @Override
-    public void clearAllNotifications(Long userId) {
-
-        List<Notification> notifications =
-                notificationRepository.findByUserIdOrderByCreatedAtDesc(userId);
-
-        notificationRepository.deleteAll(notifications);
-    }
 }
