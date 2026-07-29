@@ -8,8 +8,14 @@ import com.saas.springbackend.invoice.repository.InvoiceRepository;
 import com.saas.springbackend.invoice.util.InvoiceGenerator;
 import com.saas.springbackend.invoice.util.InvoicePdfGenerator;
 import com.saas.springbackend.payment.entity.Payment;
+import com.saas.springbackend.subscription.entity.Subscription;
+import com.saas.springbackend.subscription.repositories.SubscriptionRepository;
+import com.saas.springbackend.user.entity.User;
+import com.saas.springbackend.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -22,15 +28,21 @@ public class InvoiceService {
     private final ModelMapper modelMapper;
     private final InvoicePdfGenerator invoicePdfGenerator;
     private final InvoiceGenerator invoiceGenerator;
+    private final UserRepository userRepository;
+    private final SubscriptionRepository subscriptionRepository;
 
     public List<InvoiceResponseDto> getAllInvoices() {
 
-        List<Invoice> invoices = invoiceRepository.findAll();
+        Long subscriptionId = getCurrentCompanySubscriptionId();
+
+        List<Invoice> invoices =
+                invoiceRepository.findByPaymentSubscriptionId(subscriptionId);
 
         return invoices.stream()
                 .map(invoice -> {
 
-                    InvoiceResponseDto dto = modelMapper.map(invoice, InvoiceResponseDto.class);
+                    InvoiceResponseDto dto =
+                            modelMapper.map(invoice, InvoiceResponseDto.class);
 
                     dto.setInvoiceId(invoice.getId());
                     dto.setPaymentId(invoice.getPayment().getId());
@@ -40,13 +52,20 @@ public class InvoiceService {
                 .toList();
     }
 
-
     public InvoiceResponseDto getInvoiceById(Long id) {
-        Invoice invoice = invoiceRepository.findById(id)
-                .orElseThrow(() ->
-                        new InvoiceNotFoundException("Invoice not found with id: " + id));
 
-        InvoiceResponseDto dto = modelMapper.map(invoice, InvoiceResponseDto.class);
+        Long subscriptionId = getCurrentCompanySubscriptionId();
+
+        Invoice invoice = invoiceRepository
+                .findByIdAndPaymentSubscriptionId(id, subscriptionId)
+                .orElseThrow(() ->
+                        new InvoiceNotFoundException(
+                                "Invoice not found with id: " + id
+                        )
+                );
+
+        InvoiceResponseDto dto =
+                modelMapper.map(invoice, InvoiceResponseDto.class);
 
         dto.setInvoiceId(invoice.getId());
         dto.setPaymentId(invoice.getPayment().getId());
@@ -58,7 +77,8 @@ public class InvoiceService {
 
         if (invoiceRepository.findByPaymentId(payment.getId()).isPresent()) {
             throw new DuplicateInvoiceException(
-                    "Invoice already exists for payment: " + payment.getId());
+                    "Invoice already exists for payment: " + payment.getId()
+            );
         }
 
         Invoice invoice = invoiceGenerator.generate(payment);
@@ -76,10 +96,41 @@ public class InvoiceService {
 
     public byte[] downloadInvoice(Long id) {
 
-        Invoice invoice = invoiceRepository.findById(id)
+        Long subscriptionId = getCurrentCompanySubscriptionId();
+
+        Invoice invoice = invoiceRepository
+                .findByIdAndPaymentSubscriptionId(id, subscriptionId)
                 .orElseThrow(() ->
-                        new InvoiceNotFoundException("Invoice not found with id: " + id));
+                        new InvoiceNotFoundException(
+                                "Invoice not found with id: " + id
+                        )
+                );
 
         return invoicePdfGenerator.generate(invoice);
+    }
+
+    private Long getCurrentCompanySubscriptionId() {
+
+        Authentication authentication =
+                SecurityContextHolder.getContext().getAuthentication();
+
+        String email = authentication.getName();
+
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() ->
+                        new RuntimeException("User not found")
+                );
+
+        Long companyId = user.getCompany().getId();
+
+        Subscription subscription =
+                subscriptionRepository.findByCompanyId(companyId)
+                        .orElseThrow(() ->
+                                new RuntimeException(
+                                        "Subscription not found for company"
+                                )
+                        );
+
+        return subscription.getId();
     }
 }
