@@ -2,7 +2,10 @@ package com.saas.springbackend.subscription.service;
 
 import com.saas.springbackend.company.entity.Company;
 import com.saas.springbackend.common.exception.ResourceNotFoundException;
+import com.saas.springbackend.payment.entity.Payment;
+import com.saas.springbackend.payment.repository.PaymentRepository;
 import com.saas.springbackend.subscription.dtos.request.ChangePlanRequestDTO;
+import com.saas.springbackend.subscription.dtos.request.RenewSubscriptionRequestDTO;
 import com.saas.springbackend.subscription.dtos.response.SubscriptionDetailsResponseDTO;
 import com.saas.springbackend.subscription.factory.SubscriptionFactory;
 import com.saas.springbackend.subscription.validator.SubscriptionValidator;
@@ -30,6 +33,7 @@ public class SubscriptionServiceImpl implements SubscriptionService{
     private final SubscriptionValidator subscriptionValidator;
     private final SubscriptionFactory subscriptionFactory;
     private final UserRepository userRepository;
+    private final PaymentRepository paymentRepository;
 
     @Override
     public SubscriptionResponseDTO subscribe(SubscribeRequestDTO request) {
@@ -63,6 +67,16 @@ public class SubscriptionServiceImpl implements SubscriptionService{
 
         subscription = subscriptionRepository.save(subscription);
 
+// Link the successful payment with this subscription
+        Payment payment = paymentRepository
+                .findById(request.getPaymentId())
+                .orElseThrow(() ->
+                        new ResourceNotFoundException("Payment not found"));
+
+        payment.setSubscriptionId(subscription.getId());
+
+        paymentRepository.save(payment);
+
         subscriptionHistoryService
                 .recordSubscriptionCreated(subscription);
 
@@ -93,7 +107,9 @@ public class SubscriptionServiceImpl implements SubscriptionService{
      * updates the endDate of subscription plan.
      * */
     @Override
-    public SubscriptionResponseDTO renewSubscription(Long subscriptionId) {
+    public SubscriptionResponseDTO renewSubscription(
+            Long subscriptionId,
+            RenewSubscriptionRequestDTO request) {
 
         Subscription subscription =
                 subscriptionValidator.validateSubscriptionById(subscriptionId);
@@ -107,11 +123,16 @@ public class SubscriptionServiceImpl implements SubscriptionService{
         subscription.setEndDate(newEndDate);
         subscription.setRenewalDate(newEndDate);
 
-        System.out.println("Old End Date : " + subscription.getEndDate());
-        System.out.println("New End Date : " + newEndDate);
-        System.out.println("Billing Cycle : " + subscription.getPlanPricing().getBillingCycle());
-
         Subscription saved = subscriptionRepository.save(subscription);
+
+        Payment payment = paymentRepository
+                .findById(request.getPaymentId())
+                .orElseThrow(() ->
+                        new ResourceNotFoundException("Payment not found"));
+
+        payment.setSubscriptionId(saved.getId());
+
+        paymentRepository.save(payment);
 
         subscriptionHistoryService.recordSubscriptionRenewed(saved);
 
@@ -135,6 +156,7 @@ public class SubscriptionServiceImpl implements SubscriptionService{
 
         Subscription saved =
                 subscriptionRepository.save(subscription);
+
 
         subscriptionHistoryService
                 .recordSubscriptionCancelled(saved);
@@ -178,6 +200,15 @@ public class SubscriptionServiceImpl implements SubscriptionService{
 
         // Save updated subscription
         Subscription saved = subscriptionRepository.save(subscription);
+
+        Payment payment = paymentRepository
+                .findById(request.getPaymentId())
+                .orElseThrow(() ->
+                        new ResourceNotFoundException("Payment not found"));
+
+        payment.setSubscriptionId(saved.getId());
+
+        paymentRepository.save(payment);
 
         // Record history
         if (newPlan.getMaximumUsers() > oldPlan.getMaximumUsers()) {

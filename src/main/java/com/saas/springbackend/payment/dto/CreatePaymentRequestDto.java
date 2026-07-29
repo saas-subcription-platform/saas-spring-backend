@@ -13,9 +13,6 @@ import java.math.BigDecimal;
 @Builder
 public class CreatePaymentRequestDto {
 
-    @NotNull(message = "Subscription ID is required")
-    private Long subscriptionId;
-
     @NotNull(message = "Amount is required")
     @Positive(message = "Amount must be greater than zero")
     private BigDecimal amount;
