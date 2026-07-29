@@ -60,4 +60,9 @@ public class UserController {
 
         return ResponseEntity.ok("User deleted successfully");
     }
+
+    @GetMapping("/me")
+    public ResponseEntity<UserResponseDTO> getCurrentUser() {
+        return ResponseEntity.ok(userService.getCurrentUser());
+    }
 }
