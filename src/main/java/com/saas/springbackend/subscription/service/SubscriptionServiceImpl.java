@@ -227,6 +227,7 @@ public class SubscriptionServiceImpl implements SubscriptionService{
                 .adminName(user.getFirstName() + " " + user.getLastName())
                 .planName(subscription.getSubscriptionPlan().getPlanName())
                 .maximumUsers(subscription.getSubscriptionPlan().getMaximumUsers())
+                .billingCycle(subscription.getPlanPricing().getBillingCycle())
                 .amount(subscription.getAmount())
                 .startDate(subscription.getStartDate())
                 .endDate(subscription.getEndDate())
