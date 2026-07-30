@@ -219,4 +219,26 @@ public class UserServiceImpl implements UserService {
 
         return dto;
     }
+
+    @Override
+    public List<UserResponseDTO> getCompanyUsers() {
+
+        User currentUser = getLoggedInUser();
+
+        Long companyId = currentUser.getCompany().getId();
+
+        return userRepository.findByCompany_Id(companyId)
+                .stream()
+                .map(user -> {
+
+                    UserResponseDTO dto = mapper.map(user, UserResponseDTO.class);
+
+                    dto.setUserId(user.getId());
+                    dto.setCompanyId(user.getCompany().getId());
+                    dto.setCompanyName(user.getCompany().getCompanyName());
+
+                    return dto;
+                })
+                .toList();
+    }
 }
