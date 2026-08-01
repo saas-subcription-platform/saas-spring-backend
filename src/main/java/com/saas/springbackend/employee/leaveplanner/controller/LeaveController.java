@@ -40,4 +40,14 @@ public class LeaveController {
 
         return ResponseEntity.ok(leaveService.getLeaveBalance());
     }
+
+    @PatchMapping("/{leaveRequestId}/approve")
+    public ResponseEntity<LeaveResponseDto> approveLeave(
+            @PathVariable Long leaveRequestId) {
+
+        LeaveResponseDto response =
+                leaveService.approveLeave(leaveRequestId);
+
+        return ResponseEntity.ok(response);
+    }
 }

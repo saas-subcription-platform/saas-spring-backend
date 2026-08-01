@@ -1,14 +1,15 @@
 package com.saas.springbackend.employee.leaveplanner.service;
 
+import com.saas.springbackend.common.exception.InvalidRequestException;
 import com.saas.springbackend.common.exception.LeaveValidationException;
 import com.saas.springbackend.employee.leaveplanner.dtos.*;
 import com.saas.springbackend.employee.leaveplanner.entity.LeaveBalance;
 import com.saas.springbackend.employee.leaveplanner.entity.LeaveRequest;
+import com.saas.springbackend.employee.leaveplanner.enums.LeaveStatus;
 import com.saas.springbackend.employee.leaveplanner.repository.LeaveBalanceRepository;
 import com.saas.springbackend.employee.leaveplanner.repository.LeaveRequestRepository;
-import com.saas.springbackend.employee.leaveplanner.service.LeaveService;
-import com.saas.springbackend.employee.leaveplanner.repository.LeaveRequestRepository;
 import com.saas.springbackend.notification.entity.NotificationType;
+import com.saas.springbackend.notification.repository.NotificationRepository;
 import com.saas.springbackend.notification.service.NotificationService;
 import com.saas.springbackend.user.entity.User;
 import com.saas.springbackend.user.repository.UserRepository;
@@ -20,6 +21,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 @Service
@@ -33,17 +35,23 @@ public class LeaveServiceImpl implements LeaveService {
     private final ModelMapper modelMapper;
     private final LeaveBalanceRepository leaveBalanceRepository;
 
+
     @Override
     public LeaveResponseDto applyLeave(ApplyLeaveRequestDto requestDto) {
         if (requestDto.getFromDate().isAfter(requestDto.getToDate())) {
             throw new LeaveValidationException("From date cannot be after To date.");
         }
 
+// 3. Check dates
         if (requestDto.getFromDate().isBefore(LocalDate.now())) {
-            throw new LeaveValidationException("Leave balance not found.");
+            throw new InvalidRequestException("Past dates are not allowed.");
         }
 
         User employee = getLoggedInUser();
+
+        leaveBalanceRepository.findByEmployee(employee)
+                .orElseThrow(() ->
+                        new InvalidRequestException("Leave balance not found"));
 
         LeaveRequest leaveRequest = new LeaveRequest();
 
@@ -61,8 +69,10 @@ public class LeaveServiceImpl implements LeaveService {
                 "New Leave Request",
                 employee.getFirstName() + " " + employee.getLastName()
                         + " applied for " + requestDto.getLeaveType() + " leave.",
-                NotificationType.GENERAL
+                NotificationType.GENERAL,
+                savedLeave.getId()
         );
+
 
         LeaveResponseDto response = modelMapper.map(savedLeave, LeaveResponseDto.class);
 
@@ -99,7 +109,7 @@ public class LeaveServiceImpl implements LeaveService {
 
         LeaveBalance leaveBalance = leaveBalanceRepository
                 .findByEmployee(employee)
-                .orElseThrow(() -> new RuntimeException("Leave balance not found"));
+                .orElseThrow(() -> new InvalidRequestException("Leave balance not found"));
 
         return modelMapper.map(leaveBalance, LeaveBalanceResponseDto.class);
     }
@@ -116,4 +126,84 @@ public class LeaveServiceImpl implements LeaveService {
     }
 
 
+    @Override
+    public LeaveResponseDto approveLeave(Long leaveRequestId) {
+
+
+        LeaveRequest leaveRequest = leaveRequestRepository
+                .findById(leaveRequestId)
+                .orElseThrow(() ->
+                        new InvalidRequestException("Leave request not found"));
+        User admin = getLoggedInUser();
+
+        if (!leaveRequest.getEmployee()
+                .getCompany()
+                .getId()
+                .equals(admin.getCompany().getId())) {
+
+            throw new InvalidRequestException("Access denied.");
+        }
+
+        if (leaveRequest.getStatus() == LeaveStatus.APPROVED) {
+            throw new InvalidRequestException("Leave request is already approved.");
+        }
+        leaveRequest.setStatus(LeaveStatus.APPROVED);
+
+        LeaveRequest updatedLeave =
+                leaveRequestRepository.save(leaveRequest);
+
+        User employee = updatedLeave.getEmployee();
+
+        LeaveBalance leaveBalance = leaveBalanceRepository
+                .findByEmployee(employee)
+                .orElseThrow(() ->
+                        new InvalidRequestException("Leave balance not found"));
+
+        long totalDays =
+                ChronoUnit.DAYS.between(
+                        updatedLeave.getFromDate(),
+                        updatedLeave.getToDate()
+                ) + 1;
+
+        switch (updatedLeave.getLeaveType()) {
+
+            case CASUAL -> {
+                if (leaveBalance.getCasualBalance() < totalDays) {
+                    throw new InvalidRequestException("Insufficient casual leave balance.");
+                }
+
+                leaveBalance.setCasualBalance(
+                        leaveBalance.getCasualBalance() - (int) totalDays
+                );
+            }
+
+            case SICK -> {
+                if (leaveBalance.getSickBalance() < totalDays) {
+                    throw new InvalidRequestException("Insufficient sick leave balance.");
+                }
+
+                leaveBalance.setSickBalance(
+                        leaveBalance.getSickBalance() - (int) totalDays
+                );
+            }
+
+            case EARNED -> {
+                if (leaveBalance.getEarnedBalance() < totalDays) {
+                    throw new InvalidRequestException("Insufficient earned leave balance.");
+                }
+
+                leaveBalance.setEarnedBalance(
+                        leaveBalance.getEarnedBalance() - (int) totalDays
+                );
+            }
+        }
+
+        leaveBalanceRepository.save(leaveBalance);
+        LeaveResponseDto response =
+                modelMapper.map(updatedLeave, LeaveResponseDto.class);
+
+        response.setLeaveRequestId(updatedLeave.getId());
+
+        return response;
+    }
 }

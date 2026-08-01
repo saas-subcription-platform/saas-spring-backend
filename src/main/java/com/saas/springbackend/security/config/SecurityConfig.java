@@ -54,7 +54,6 @@ public class SecurityConfig {
                                 "/api/subscription-plans/**",
                                 "/api/subscriptions",
                                 "/api/subscriptions/**",
-                                "/admin/notifications/**",
                                 "/payments/**",
                                 "/transactions/**",
                                 "/invoices/**",
@@ -63,8 +62,8 @@ public class SecurityConfig {
                                 "/swagger-ui.html"
                         ).permitAll()
                        // .requestMatchers("/admin/users/**").hasRole("ADMIN")
-                        .requestMatchers("/admin").hasRole("ADMIN")
-                        .requestMatchers("/employee").hasRole("EMPLOYEE")
+                        .requestMatchers("/admin/**").hasRole("ADMIN")
+                        .requestMatchers("/employee/**").hasAnyRole("EMPLOYEE", "ADMIN")
 
 //                        .requestMatchers("/user").hasAnyRole("USER", "ADMIN")
 

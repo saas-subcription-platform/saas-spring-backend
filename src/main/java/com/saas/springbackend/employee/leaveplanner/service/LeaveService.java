@@ -14,4 +14,5 @@ public interface LeaveService {
 
     LeaveBalanceResponseDto getLeaveBalance();
 
+    LeaveResponseDto approveLeave(Long leaveRequestId);
 }
