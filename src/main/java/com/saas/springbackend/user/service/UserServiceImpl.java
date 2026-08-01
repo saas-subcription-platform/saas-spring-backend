@@ -3,6 +3,8 @@ package com.saas.springbackend.user.service;
 import com.saas.springbackend.company.dtos.LoginRequest;
 import com.saas.springbackend.company.dtos.LoginResponseDto;
 import com.saas.springbackend.company.entity.Company;
+import com.saas.springbackend.employee.leaveplanner.entity.LeaveBalance;
+import com.saas.springbackend.employee.leaveplanner.repository.LeaveBalanceRepository;
 import com.saas.springbackend.notification.entity.NotificationType;
 import com.saas.springbackend.notification.repository.NotificationRepository;
 import com.saas.springbackend.notification.service.NotificationService;
@@ -35,6 +37,7 @@ public class UserServiceImpl implements UserService {
     private final NotificationService notificationService;
     private final PasswordEncoder passwordEncoder;
     private final NotificationRepository notificationRepository;
+    private final LeaveBalanceRepository leaveBalanceRepository;
 
     @Override
     public LoginResponseDto verify(LoginRequest request) {
@@ -95,6 +98,14 @@ public class UserServiceImpl implements UserService {
         user.setCompany(company);
 
         User savedUser = userRepository.save(user);
+        LeaveBalance leaveBalance = LeaveBalance.builder()
+                .employee(savedUser)
+                .casualBalance(12)
+                .sickBalance(6)
+                .earnedBalance(15)
+                .build();
+
+        leaveBalanceRepository.save(leaveBalance);
 
         notificationService.createNotification(
                 savedUser,
