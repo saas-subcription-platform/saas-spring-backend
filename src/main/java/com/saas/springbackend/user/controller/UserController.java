@@ -65,4 +65,9 @@ public class UserController {
     public ResponseEntity<UserResponseDTO> getCurrentUser() {
         return ResponseEntity.ok(userService.getCurrentUser());
     }
+
+    @GetMapping("/company")
+    public ResponseEntity<List<UserResponseDTO>> getCompanyUsers() {
+        return ResponseEntity.ok(userService.getCompanyUsers());
+    }
 }

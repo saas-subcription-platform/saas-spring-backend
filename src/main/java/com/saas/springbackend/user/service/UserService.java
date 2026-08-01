@@ -25,4 +25,6 @@ public interface UserService {
     void deleteUser(Long userId);
 
     UserResponseDTO getCurrentUser();
+
+    List<UserResponseDTO> getCompanyUsers();
 }
