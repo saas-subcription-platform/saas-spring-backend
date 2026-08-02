@@ -49,13 +49,13 @@ public class LeaveServiceImpl implements LeaveService {
 
         User employee = getLoggedInUser();
 
-        leaveBalanceRepository.findByEmployee(employee)
+        leaveBalanceRepository.findByEmployeeId(employee.getId())
                 .orElseThrow(() ->
                         new InvalidRequestException("Leave balance not found"));
 
         LeaveRequest leaveRequest = new LeaveRequest();
 
-        leaveRequest.setEmployee(employee);
+        leaveRequest.setEmployeeId(employee.getId());
         leaveRequest.setLeaveType(requestDto.getLeaveType());
         leaveRequest.setFromDate(requestDto.getFromDate());
         leaveRequest.setToDate(requestDto.getToDate());
@@ -86,7 +86,7 @@ public class LeaveServiceImpl implements LeaveService {
         User employee = getLoggedInUser();
 
         List<LeaveRequest> leaveRequests =
-                leaveRequestRepository.findByEmployeeOrderByCreatedAtDesc(employee);
+                leaveRequestRepository.findByEmployeeIdOrderByCreatedAtDesc(employee.getId());
 
         return leaveRequests.stream()
                 .map(leaveRequest -> {
@@ -108,7 +108,7 @@ public class LeaveServiceImpl implements LeaveService {
         User employee = getLoggedInUser();
 
         LeaveBalance leaveBalance = leaveBalanceRepository
-                .findByEmployee(employee)
+                .findByEmployeeId(employee.getId())
                 .orElseThrow(() -> new InvalidRequestException("Leave balance not found"));
 
         return modelMapper.map(leaveBalance, LeaveBalanceResponseDto.class);
@@ -136,11 +136,11 @@ public class LeaveServiceImpl implements LeaveService {
                         new InvalidRequestException("Leave request not found"));
         User admin = getLoggedInUser();
 
-        if (!leaveRequest.getEmployee()
-                .getCompany()
-                .getId()
-                .equals(admin.getCompany().getId())) {
+        User employee = userRepository.findById(leaveRequest.getEmployeeId())
+                .orElseThrow(() ->
+                        new InvalidRequestException("Employee not found"));
 
+        if (!employee.getCompany().getId().equals(admin.getCompany().getId())) {
             throw new InvalidRequestException("Access denied.");
         }
 
@@ -148,14 +148,15 @@ public class LeaveServiceImpl implements LeaveService {
             throw new InvalidRequestException("Leave request is already approved.");
         }
         leaveRequest.setStatus(LeaveStatus.APPROVED);
+        leaveRequest.setReviewedBy(admin.getId());
+        leaveRequest.setReviewedAt(java.time.LocalDateTime.now());
 
         LeaveRequest updatedLeave =
                 leaveRequestRepository.save(leaveRequest);
 
-        User employee = updatedLeave.getEmployee();
 
-        LeaveBalance leaveBalance = leaveBalanceRepository
-                .findByEmployee(employee)
+
+        LeaveBalance leaveBalance = leaveBalanceRepository.findByEmployeeId(employee.getId())
                 .orElseThrow(() ->
                         new InvalidRequestException("Leave balance not found"));
 

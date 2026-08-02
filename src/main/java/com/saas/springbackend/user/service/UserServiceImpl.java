@@ -99,7 +99,7 @@ public class UserServiceImpl implements UserService {
 
         User savedUser = userRepository.save(user);
         LeaveBalance leaveBalance = LeaveBalance.builder()
-                .employee(savedUser)
+                .employeeId(savedUser.getId())
                 .casualBalance(12)
                 .sickBalance(6)
                 .earnedBalance(15)
@@ -214,6 +214,8 @@ public class UserServiceImpl implements UserService {
 
         notificationRepository.deleteByUserId(userId);
 
+        leaveBalanceRepository.deleteByEmployeeId(userId);
+        notificationRepository.deleteByUserId(userId);
         userRepository.delete(user);
     }
 

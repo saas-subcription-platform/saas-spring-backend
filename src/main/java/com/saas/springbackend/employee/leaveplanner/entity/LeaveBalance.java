@@ -1,7 +1,6 @@
 package com.saas.springbackend.employee.leaveplanner.entity;
 
 import com.saas.springbackend.common.entity.BaseClass;
-import com.saas.springbackend.user.entity.User;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
@@ -18,9 +17,8 @@ import lombok.experimental.SuperBuilder;
         column = @Column(name = "leave_balance_id"))
 public class LeaveBalance extends BaseClass {
 
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "employee_id", nullable = false, unique = true)
-    private User employee;
+    @Column(name = "employee_id", nullable = false, unique = true)
+    private Long employeeId;
 
     @Column(nullable = false)
     private Integer casualBalance;

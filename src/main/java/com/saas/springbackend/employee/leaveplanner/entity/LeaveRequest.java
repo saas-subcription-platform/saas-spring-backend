@@ -3,9 +3,6 @@ package com.saas.springbackend.employee.leaveplanner.entity;
 import com.saas.springbackend.common.entity.BaseClass;
 import com.saas.springbackend.employee.leaveplanner.enums.LeaveStatus;
 import com.saas.springbackend.employee.leaveplanner.enums.LeaveType;
-import com.saas.springbackend.employee.leaveplanner.enums.LeaveStatus;
-import com.saas.springbackend.employee.leaveplanner.enums.LeaveType;
-import com.saas.springbackend.user.entity.User;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
@@ -25,9 +22,8 @@ import java.time.LocalDateTime;
         column = @Column(name = "leave_request_id"))
 public class LeaveRequest extends BaseClass {
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "employee_id", nullable = false)
-    private User employee;
+    @Column(name = "employee_id", nullable = false)
+    private Long employeeId;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
@@ -47,9 +43,8 @@ public class LeaveRequest extends BaseClass {
     @Builder.Default
     private LeaveStatus status = LeaveStatus.PENDING;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "reviewed_by")
-    private User reviewedBy;
+    @Column(name = "reviewed_by")
+    private Long reviewedBy;
 
     private LocalDateTime reviewedAt;
 
