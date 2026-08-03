@@ -150,6 +150,21 @@ public ResponseEntity<ErrorResponseDto> handleInvalidRequestException(
         return new ResponseEntity<>(error, HttpStatus.CONFLICT);
     }
 
+    @ExceptionHandler(LeaveValidationException.class)
+    public ResponseEntity<ErrorResponseDto> handleLeaveValidation(
+            LeaveValidationException ex,
+            HttpServletRequest request) {
+
+        ErrorResponseDto error = new ErrorResponseDto(
+                LocalDateTime.now(),
+                HttpStatus.BAD_REQUEST.value(),
+                HttpStatus.BAD_REQUEST.getReasonPhrase(),
+                ex.getMessage(),
+                request.getRequestURI()
+        );
+
+        return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+    }
 
 //    Generic Exception Handler
 @ExceptionHandler(Exception.class)

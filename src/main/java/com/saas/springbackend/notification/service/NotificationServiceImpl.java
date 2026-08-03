@@ -1,5 +1,6 @@
 package com.saas.springbackend.notification.service;
 
+import com.saas.springbackend.employee.leaveplanner.repository.LeaveRequestRepository;
 import com.saas.springbackend.notification.dto.NotificationResponseDTO;
 import com.saas.springbackend.notification.entity.Notification;
 import com.saas.springbackend.notification.entity.NotificationStatus;
@@ -27,6 +28,7 @@ public class NotificationServiceImpl implements NotificationService {
     private final NotificationRepository notificationRepository;
 
     private final ModelMapper mapper;
+    private final LeaveRequestRepository leaveRequestRepository;
 
     @Override
     public NotificationResponseDTO createNotification(
@@ -55,6 +57,36 @@ public class NotificationServiceImpl implements NotificationService {
         return response;
     }
 
+    @Override
+    public NotificationResponseDTO createNotification(
+            User user,
+            String title,
+            String message,
+            NotificationType type,
+            Long referenceId) {
+
+        Notification notification = new Notification();
+
+        notification.setCompany(user.getCompany());
+        notification.setTitle(title);
+        notification.setMessage(message);
+        notification.setType(type);
+        notification.setStatus(NotificationStatus.UNREAD);
+        notification.setUser(user);
+        notification.setReferenceId(referenceId);
+
+        Notification savedNotification =
+                notificationRepository.save(notification);
+
+        NotificationResponseDTO response =
+                mapper.map(savedNotification, NotificationResponseDTO.class);
+
+        response.setNotificationId(savedNotification.getId());
+        response.setUserId(user.getId());
+        response.setReferenceId(savedNotification.getReferenceId());
+
+        return response;
+    }
 
     @Override
     public List<NotificationResponseDTO> getAllNotifications() {
@@ -73,6 +105,17 @@ public class NotificationServiceImpl implements NotificationService {
 
                     dto.setNotificationId(notification.getId());
                     dto.setUserId(notification.getUser().getId());
+                    dto.setReferenceId(notification.getReferenceId());
+
+                    if (notification.getReferenceId() != null) {
+
+                        leaveRequestRepository.findById(notification.getReferenceId())
+                                .ifPresent(leaveRequest -> {
+                                    dto.setLeaveStatus(leaveRequest.getStatus());
+                                    dto.setFromDate(leaveRequest.getFromDate());
+                                    dto.setToDate(leaveRequest.getToDate());
+                                });
+                    }
 
                     return dto;
                 })
@@ -143,7 +186,7 @@ public class NotificationServiceImpl implements NotificationService {
         dto.setNotificationId(updatedNotification.getId());
 
         dto.setUserId(updatedNotification.getUser().getId());
-
+        dto.setReferenceId(updatedNotification.getReferenceId());
 
         return dto;
     }
@@ -173,7 +216,14 @@ public class NotificationServiceImpl implements NotificationService {
 
         dto.setNotificationId(latestNotification.getId());
         dto.setUserId(latestNotification.getUser().getId());
+        dto.setReferenceId(latestNotification.getReferenceId());
 
+        if (latestNotification.getReferenceId() != null) {
+
+            leaveRequestRepository.findById(latestNotification.getReferenceId())
+                    .ifPresent(leaveRequest ->
+                            dto.setLeaveStatus(leaveRequest.getStatus()));
+        }
         return dto;
     }
 

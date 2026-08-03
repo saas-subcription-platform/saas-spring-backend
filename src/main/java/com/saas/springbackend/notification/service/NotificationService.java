@@ -23,4 +23,11 @@ public interface NotificationService {
     NotificationResponseDTO getLatestNotification();
 
     NotificationResponseDTO markAsRead(Long notificationId);
+
+    NotificationResponseDTO createNotification(
+            User user,
+            String title,
+            String message,
+            NotificationType type,
+            Long referenceId);
 }

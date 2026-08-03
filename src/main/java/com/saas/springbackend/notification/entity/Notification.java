@@ -42,4 +42,6 @@ public class Notification extends BaseClass {
     @JoinColumn(name = "company_id", nullable = false)
     @ToString.Exclude
     private Company company;
+
+    private Long referenceId;
 }
