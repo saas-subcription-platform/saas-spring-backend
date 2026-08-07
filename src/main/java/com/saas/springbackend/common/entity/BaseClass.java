@@ -1,7 +1,7 @@
 package com.saas.springbackend.common.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
+        import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -20,7 +20,7 @@ import java.time.LocalDateTime;
 public class BaseClass {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-   private Long id;
+    private Long id;
 
     @CreationTimestamp
     @Column(name = "created_at",nullable = false,updatable = false)
