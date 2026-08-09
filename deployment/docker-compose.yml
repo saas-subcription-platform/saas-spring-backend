@@ -67,7 +67,7 @@ services:
       - genai-service
 
     ports:
-      - "5173:5173"
+      - "80:80"
 
     networks:
       - saas-network
