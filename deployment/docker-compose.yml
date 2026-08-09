@@ -61,9 +61,30 @@ services:
 
     depends_on:
       - backend
+      - team-collaboration
+      - goal-performance
+      - timesheets
+      - genai-service
 
     ports:
       - "5173:5173"
+
+    networks:
+      - saas-network
+
+
+  genai-service:
+    build:
+      context: ../../saas-genai-service
+      dockerfile: Dockerfile
+
+    container_name: saas-genai-service
+
+    environment:
+      GEMINI_API_KEY: ${GEMINI_API_KEY}
+
+    ports:
+      - "8000:8000"
 
     networks:
       - saas-network
