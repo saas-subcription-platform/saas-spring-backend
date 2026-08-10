@@ -1,0 +1,172 @@
+services:
+
+  postgres:
+    image: postgres:17
+    container_name: saas-postgres
+    restart: unless-stopped
+
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+    ports:
+      - "5432:5432"
+
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+
+    networks:
+      - saas-network
+
+
+  backend:
+    build:
+      context: ..
+      dockerfile: Dockerfile
+
+    container_name: saas-backend
+
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/${POSTGRES_DB}
+      SPRING_DATASOURCE_USERNAME: ${POSTGRES_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+
+      RAZORPAY_KEY_ID: ${RAZORPAY_KEY_ID}
+      RAZORPAY_KEY_SECRET: ${RAZORPAY_KEY_SECRET}
+
+    ports:
+      - "9090:9090"
+
+    networks:
+      - saas-network
+
+
+  frontend:
+    build:
+      context: ../../saas-frontend/frontend
+      dockerfile: Dockerfile
+
+    container_name: saas-frontend
+
+    depends_on:
+      - backend
+      - team-collaboration
+      - goal-performance
+      - timesheets
+      - genai-service
+
+    ports:
+      - "80:80"
+
+    networks:
+      - saas-network
+
+
+  genai-service:
+    build:
+      context: ../../saas-genai-service
+      dockerfile: Dockerfile
+
+    container_name: saas-genai-service
+
+    environment:
+      GEMINI_API_KEY: ${GEMINI_API_KEY}
+
+    ports:
+      - "8000:8000"
+
+    networks:
+      - saas-network
+
+
+  team-collaboration:
+    build:
+      context: ../../saas-backend-dotnet/SaasEmployeeModules
+      dockerfile: TeamCollaboration/Dockerfile
+
+    container_name: team-collaboration
+
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_URLS: http://+:5034
+
+      ConnectionStrings__DefaultConnection: Host=postgres;Port=5432;Database=${POSTGRES_DB};Username=${POSTGRES_USER};Password=${POSTGRES_PASSWORD}
+
+      SpringBoot__BaseUrl: http://backend:9090
+
+    ports:
+      - "5034:5034"
+
+    networks:
+      - saas-network
+
+
+  timesheets:
+    build:
+      context: ../../saas-backend-dotnet/SaasEmployeeModules
+      dockerfile: Timesheets/Dockerfile
+
+    container_name: timesheets
+
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_URLS: http://+:5114
+
+      ConnectionStrings__DefaultConnection: Host=postgres;Port=5432;Database=${POSTGRES_DB};Username=${POSTGRES_USER};Password=${POSTGRES_PASSWORD}
+
+    ports:
+      - "5114:5114"
+
+    networks:
+      - saas-network
+
+
+  goal-performance:
+    build:
+      context: ../../saas-backend-dotnet/SaasEmployeeModules
+      dockerfile: GoalandPerformance/Dockerfile
+
+    container_name: goal-performance
+
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_URLS: http://+:5072
+
+      ConnectionStrings__DefaultConnection: Host=postgres;Port=5432;Database=${POSTGRES_DB};Username=${POSTGRES_USER};Password=${POSTGRES_PASSWORD}
+
+    ports:
+      - "5072:5072"
+
+    networks:
+      - saas-network
+
+
+volumes:
+  postgres-data:
+
+
+networks:
+  saas-network:
